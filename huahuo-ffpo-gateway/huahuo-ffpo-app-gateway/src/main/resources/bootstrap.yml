@@ -1,0 +1,13 @@
+server:
+  port: 51601
+spring:
+  application:
+    name: huahuo-app-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: fancyday.fit:8848
+      config:
+        server-addr: fancyday.fit:8848
+        file-extension: yml
+        namespace: huahuo
