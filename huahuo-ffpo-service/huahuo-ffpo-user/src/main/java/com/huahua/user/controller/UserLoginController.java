@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  * @创建日期 2022/10/23 15:38
  */
 @RestController
-@RequestMapping("/user/login")
+@RequestMapping("/login")
 public class UserLoginController {
 @Autowired
     UserService userService;

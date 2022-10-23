@@ -1,5 +1,10 @@
 package com.huahua.user.service.impl;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.jwt.JWT;
+import cn.hutool.jwt.JWTPayload;
+import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huahua.user.Mapper.UserMapper;
@@ -10,9 +15,7 @@ import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.user.dtos.UserLoginDto;
 import com.huahuo.model.user.dtos.UserSignDto;
 import com.huahuo.model.user.pojos.User;
-import com.huahuo.utils.common.AppJwtUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -48,12 +51,36 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User>  implements 
         pswd = DigestUtils.md5DigestAsHex((pswd + salt).getBytes());
         if (pswd.equals(wmUser.getPassword())) {
             //4.返回数据  jwt
-            Map<String, Object> map = new HashMap<>();
-            map.put("token", AppJwtUtil.getToken(wmUser.getId().longValue()));
+            DateTime now = DateTime.now();
+            DateTime newTime = now.offsetNew(DateField.MINUTE, 360);
+
+            Map<String,Object> payload = new HashMap<String,Object>();
+            //签发时间
+            payload.put(JWTPayload.ISSUED_AT, now);
+            //过期时间
+            payload.put(JWTPayload.EXPIRES_AT, newTime);
+            //生效时间
+            payload.put(JWTPayload.NOT_BEFORE, now);
+            //载荷
+            payload.put("createname", "cjh");
+            payload.put("id", wmUser.getId());
+
+            String key = "bycbug";
+            String token = JWTUtil.createToken(payload, key.getBytes());
+
+
+
+
+
+
+
+
+            Map<String, Object> map1 = new HashMap<>();
+            map1.put("token", token);
             wmUser.setSalt("");
             wmUser.setPassword("");
-            map.put("user", wmUser);
-            return ResponseResult.okResult(map);
+            map1.put("user", wmUser);
+            return ResponseResult.okResult(map1);
 
         } else {
             return ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_PASSWORD_ERROR);

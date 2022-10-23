@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @作者 花火
  * @创建日期 2022/10/23 16:05
  */
-@RequestMapping("test")
+@RequestMapping("/test")
 @RestController
 public class TestController {
 

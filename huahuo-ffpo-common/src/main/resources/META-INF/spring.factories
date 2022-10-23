@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-   com.huahuo.common.exception.ExceptionCatch
-
+  com.huahuo.common.exception.ExceptionCatch

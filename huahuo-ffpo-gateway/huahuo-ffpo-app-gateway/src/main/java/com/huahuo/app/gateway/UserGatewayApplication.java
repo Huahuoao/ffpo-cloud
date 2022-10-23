@@ -1,4 +1,4 @@
-package com.huahuo.user.gateway;
+package com.huahuo.app.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
