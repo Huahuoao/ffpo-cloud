@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>huahuo-ffpo-user</module>
+        <module>huahuo-ffpo-stamp</module>
     </modules>
 
     <properties>
