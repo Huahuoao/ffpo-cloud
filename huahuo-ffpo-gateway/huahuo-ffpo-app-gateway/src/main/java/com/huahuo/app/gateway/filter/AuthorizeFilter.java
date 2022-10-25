@@ -31,7 +31,10 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             //放行
             return chain.filter(exchange);
         }
-
+        if(request.getURI().getPath().contains("/admin")){
+            //放行
+            return chain.filter(exchange);
+        }
         //3.获取token
          String token = request.getHeaders().getFirst("token");
         //4.判断token是否存在

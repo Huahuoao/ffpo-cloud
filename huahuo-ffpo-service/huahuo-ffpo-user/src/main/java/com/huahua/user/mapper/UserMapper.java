@@ -1,4 +1,4 @@
-package com.huahua.user.Mapper;
+package com.huahua.user.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

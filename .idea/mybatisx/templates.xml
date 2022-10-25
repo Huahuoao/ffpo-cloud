@@ -65,8 +65,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="User" />
-                  <option name="tableName" value="user" />
+                  <option name="className" value="StampDetail" />
+                  <option name="tableName" value="stamp_detail" />
                 </TableUIInfo>
               </list>
             </option>

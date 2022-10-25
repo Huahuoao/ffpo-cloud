@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @创建日期 2022/10/23 11:21
  */
 @SpringBootApplication
-public class UserGatewayApplication {
+public class AppGatewayApplication {
     public static void main(String[] args) {
-        SpringApplication.run(UserGatewayApplication.class,args);
+        SpringApplication.run(AppGatewayApplication.class,args);
     }
 }

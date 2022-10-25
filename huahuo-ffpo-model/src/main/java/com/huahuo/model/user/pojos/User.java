@@ -42,65 +42,10 @@ public class User implements Serializable {
     private Integer sex;
 
     /**
-     * 特征一
-     */
-    @TableField(value = "first_character")
-    private Integer firstCharacter;
-
-    /**
-     * 特征二
-     */
-    @TableField(value = "second_character")
-    private Integer secondCharacter;
-
-    /**
-     * 特征三
-     */
-    @TableField(value = "third_character")
-    private Integer thirdCharacter;
-
-    /**
-     * 特征四
-     */
-    @TableField(value = "forth_character")
-    private Integer forthCharacter;
-
-    /**
-     * 特征五
-     */
-    @TableField(value = "constellation")
-    private Integer constellation;
-
-    /**
      * 用户等级
      */
     @TableField(value = "level")
     private Integer level;
-
-    /**
-     * 邮票数量
-     */
-    @TableField(value = "stamp_num")
-    private Integer stampNum;
-
-    /**
-     * 心理年龄
-     */
-    @TableField(value = "psychological_age")
-    private Integer psychologicalAge;
-
-    /**
-     * 发件数量
-     */
-    @TableField(value = "send_msg_num")
-    private Integer sendMsgNum;
-
-    /**
-     * 收件数量
-
-     */
-    @TableField(value = "get_msg_num")
-    private Integer getMsgNum;
 
     /**
      * 头像图片url
@@ -159,18 +104,6 @@ public class User implements Serializable {
     /**
      * 
      */
-    @TableField(value = "single_img_id")
-    private String singleImgId;
-
-    /**
-     * 
-     */
-    @TableField(value = "single_img_id_url")
-    private String singleImgIdUrl;
-
-    /**
-     * 
-     */
     @TableField(value = "salt")
     private String salt;
 
@@ -193,16 +126,7 @@ public class User implements Serializable {
             && (this.getUsername() == null ? other.getUsername() == null : this.getUsername().equals(other.getUsername()))
             && (this.getPassword() == null ? other.getPassword() == null : this.getPassword().equals(other.getPassword()))
             && (this.getSex() == null ? other.getSex() == null : this.getSex().equals(other.getSex()))
-            && (this.getFirstCharacter() == null ? other.getFirstCharacter() == null : this.getFirstCharacter().equals(other.getFirstCharacter()))
-            && (this.getSecondCharacter() == null ? other.getSecondCharacter() == null : this.getSecondCharacter().equals(other.getSecondCharacter()))
-            && (this.getThirdCharacter() == null ? other.getThirdCharacter() == null : this.getThirdCharacter().equals(other.getThirdCharacter()))
-            && (this.getForthCharacter() == null ? other.getForthCharacter() == null : this.getForthCharacter().equals(other.getForthCharacter()))
-            && (this.getConstellation() == null ? other.getConstellation() == null : this.getConstellation().equals(other.getConstellation()))
             && (this.getLevel() == null ? other.getLevel() == null : this.getLevel().equals(other.getLevel()))
-            && (this.getStampNum() == null ? other.getStampNum() == null : this.getStampNum().equals(other.getStampNum()))
-            && (this.getPsychologicalAge() == null ? other.getPsychologicalAge() == null : this.getPsychologicalAge().equals(other.getPsychologicalAge()))
-            && (this.getSendMsgNum() == null ? other.getSendMsgNum() == null : this.getSendMsgNum().equals(other.getSendMsgNum()))
-            && (this.getGetMsgNum() == null ? other.getGetMsgNum() == null : this.getGetMsgNum().equals(other.getGetMsgNum()))
             && (this.getHeadImg() == null ? other.getHeadImg() == null : this.getHeadImg().equals(other.getHeadImg()))
             && (this.getSignature() == null ? other.getSignature() == null : this.getSignature().equals(other.getSignature()))
             && (this.getAddress() == null ? other.getAddress() == null : this.getAddress().equals(other.getAddress()))
@@ -212,8 +136,6 @@ public class User implements Serializable {
             && (this.getCreteTime() == null ? other.getCreteTime() == null : this.getCreteTime().equals(other.getCreteTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()))
             && (this.getStampBagId() == null ? other.getStampBagId() == null : this.getStampBagId().equals(other.getStampBagId()))
-            && (this.getSingleImgId() == null ? other.getSingleImgId() == null : this.getSingleImgId().equals(other.getSingleImgId()))
-            && (this.getSingleImgIdUrl() == null ? other.getSingleImgIdUrl() == null : this.getSingleImgIdUrl().equals(other.getSingleImgIdUrl()))
             && (this.getSalt() == null ? other.getSalt() == null : this.getSalt().equals(other.getSalt()));
     }
 
@@ -225,16 +147,7 @@ public class User implements Serializable {
         result = prime * result + ((getUsername() == null) ? 0 : getUsername().hashCode());
         result = prime * result + ((getPassword() == null) ? 0 : getPassword().hashCode());
         result = prime * result + ((getSex() == null) ? 0 : getSex().hashCode());
-        result = prime * result + ((getFirstCharacter() == null) ? 0 : getFirstCharacter().hashCode());
-        result = prime * result + ((getSecondCharacter() == null) ? 0 : getSecondCharacter().hashCode());
-        result = prime * result + ((getThirdCharacter() == null) ? 0 : getThirdCharacter().hashCode());
-        result = prime * result + ((getForthCharacter() == null) ? 0 : getForthCharacter().hashCode());
-        result = prime * result + ((getConstellation() == null) ? 0 : getConstellation().hashCode());
         result = prime * result + ((getLevel() == null) ? 0 : getLevel().hashCode());
-        result = prime * result + ((getStampNum() == null) ? 0 : getStampNum().hashCode());
-        result = prime * result + ((getPsychologicalAge() == null) ? 0 : getPsychologicalAge().hashCode());
-        result = prime * result + ((getSendMsgNum() == null) ? 0 : getSendMsgNum().hashCode());
-        result = prime * result + ((getGetMsgNum() == null) ? 0 : getGetMsgNum().hashCode());
         result = prime * result + ((getHeadImg() == null) ? 0 : getHeadImg().hashCode());
         result = prime * result + ((getSignature() == null) ? 0 : getSignature().hashCode());
         result = prime * result + ((getAddress() == null) ? 0 : getAddress().hashCode());
@@ -244,8 +157,6 @@ public class User implements Serializable {
         result = prime * result + ((getCreteTime() == null) ? 0 : getCreteTime().hashCode());
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         result = prime * result + ((getStampBagId() == null) ? 0 : getStampBagId().hashCode());
-        result = prime * result + ((getSingleImgId() == null) ? 0 : getSingleImgId().hashCode());
-        result = prime * result + ((getSingleImgIdUrl() == null) ? 0 : getSingleImgIdUrl().hashCode());
         result = prime * result + ((getSalt() == null) ? 0 : getSalt().hashCode());
         return result;
     }
@@ -260,16 +171,7 @@ public class User implements Serializable {
         sb.append(", username=").append(username);
         sb.append(", password=").append(password);
         sb.append(", sex=").append(sex);
-        sb.append(", firstCharacter=").append(firstCharacter);
-        sb.append(", secondCharacter=").append(secondCharacter);
-        sb.append(", thirdCharacter=").append(thirdCharacter);
-        sb.append(", forthCharacter=").append(forthCharacter);
-        sb.append(", constellation=").append(constellation);
         sb.append(", level=").append(level);
-        sb.append(", stampNum=").append(stampNum);
-        sb.append(", psychologicalAge=").append(psychologicalAge);
-        sb.append(", sendMsgNum=").append(sendMsgNum);
-        sb.append(", getMsgNum=").append(getMsgNum);
         sb.append(", headImg=").append(headImg);
         sb.append(", signature=").append(signature);
         sb.append(", address=").append(address);
@@ -279,8 +181,6 @@ public class User implements Serializable {
         sb.append(", creteTime=").append(creteTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", stampBagId=").append(stampBagId);
-        sb.append(", singleImgId=").append(singleImgId);
-        sb.append(", singleImgIdUrl=").append(singleImgIdUrl);
         sb.append(", salt=").append(salt);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
