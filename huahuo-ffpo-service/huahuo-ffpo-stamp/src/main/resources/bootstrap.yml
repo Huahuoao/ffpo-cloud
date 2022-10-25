@@ -11,3 +11,4 @@ spring:
         server-addr: fancyday.fit:8848
         file-extension: yml
         namespace: huahuo
+        ephemeral: false
