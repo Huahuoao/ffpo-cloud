@@ -36,4 +36,11 @@ public class AdminStampController {
          service.removeById(id);
          return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"删除成功");
     }
+
+    @GetMapping("/feign/getstampimg/{id}")
+    public String getStampImg(@PathVariable("id") Integer id)
+    {
+        Stamp byId = service.getById(id);
+        return byId.getImg();
+    }
 }

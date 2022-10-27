@@ -16,7 +16,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 
 /**
  * @作者 花火
@@ -28,32 +27,17 @@ import java.time.LocalDateTime;
 public class UserStampController {
     @Autowired
     private StampDetailService service;
-    @Autowired
-    private StampService stampService;
+
 
     @PostMapping("/create")
     @CacheEvict(value = "StampBagCache",allEntries = true)
     public ResponseResult create(@RequestBody UserStampDetailDto dto){
-        StampDetail stampDetail = new StampDetail();
-        stampDetail.setSignature(dto.getSignature());
-        stampDetail.setStampTypeId(dto.getStampTypeId());
-        stampDetail.setGetTime(DateUtil.now());
-        log.info(stampDetail.getGetTime());
-        stampDetail.setOwnnerId(ThreadLocalUtil.getUser().getId());
-        Integer stampTypeId = stampDetail.getStampTypeId();
-        Stamp byId = stampService.getById(stampTypeId);
-        stampDetail.setLife(0.99);
-        stampDetail.setMsg(byId.getMsg());
-        service.save(stampDetail);
-        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"获得新的邮票！");
+        return service.create(dto);
     }
 
     @PostMapping("/update")
     public ResponseResult update(@RequestBody UserStampDetailDto dto){
-        StampDetail byId = service.getById(dto.getId());
-        byId.setSignature(dto.getSignature());
-        service.updateById(byId);
-        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"修改签名成功！");
+       return  service.update(dto);
     }
 
     @PostMapping("/list")
@@ -61,4 +45,8 @@ public class UserStampController {
     public ResponseResult list(@RequestBody StampPageDto dto) {
         return service.list(dto);
     }
+
+
+
+
 }

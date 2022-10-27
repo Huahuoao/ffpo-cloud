@@ -1,0 +1,14 @@
+server:
+  port: 51906
+spring:
+  application:
+    name: huahuo-ffpo-mail
+  cloud:
+    nacos:
+      discovery:
+        server-addr: fancyday.fit:8848
+      config:
+        server-addr: fancyday.fit:8848
+        file-extension: yml
+        namespace: huahuo
+        ephemeral: false

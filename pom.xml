@@ -15,6 +15,7 @@
         <module>huahuo-ffpo-feign-api</module>
         <module>huahuo-ffpo-service</module>
         <module>huahuo-ffpo-gateway</module>
+        <module>huahuo-ffpo-service/huahuo-ffpo-mail</module>
     </modules>
 
     <!-- 继承Spring boot工程 -->

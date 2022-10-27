@@ -42,6 +42,8 @@ public class Stamp implements Serializable {
     /**
      * 名称
      */
+
+
     @TableField(value = "name")
     private String name;
 
