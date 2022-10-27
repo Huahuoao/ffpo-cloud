@@ -1,16 +1,19 @@
 package com.huahuo.stamp.controller;
 
+import cn.hutool.core.date.DateUtil;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
+import com.huahuo.model.stamp.dtos.StampPageDto;
 import com.huahuo.model.stamp.pojos.Stamp;
 import com.huahuo.model.stamp.pojos.StampDetail;
 import com.huahuo.model.stamp.pojos.UserStampDetailDto;
 import com.huahuo.stamp.service.StampDetailService;
 import com.huahuo.stamp.service.StampService;
 import com.huahuo.utils.thread.ThreadLocalUtil;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -27,13 +30,15 @@ public class UserStampController {
     private StampDetailService service;
     @Autowired
     private StampService stampService;
+
     @PostMapping("/create")
+    @CacheEvict(value = "StampBagCache",allEntries = true)
     public ResponseResult create(@RequestBody UserStampDetailDto dto){
         StampDetail stampDetail = new StampDetail();
         stampDetail.setSignature(dto.getSignature());
         stampDetail.setStampTypeId(dto.getStampTypeId());
-        stampDetail.setGetTime(LocalDateTime.now());
-        log.info(stampDetail.getGetTime().toString());
+        stampDetail.setGetTime(DateUtil.now());
+        log.info(stampDetail.getGetTime());
         stampDetail.setOwnnerId(ThreadLocalUtil.getUser().getId());
         Integer stampTypeId = stampDetail.getStampTypeId();
         Stamp byId = stampService.getById(stampTypeId);
@@ -51,7 +56,9 @@ public class UserStampController {
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"修改签名成功！");
     }
 
-
-//    @GetMapping("/list")    Integer orderWay;   0 默认按时间 1星级 2 磨损度
-//    public Page
+    @PostMapping("/list")
+    @Cacheable(value = "StampBagCache",key = "#dto.userId+'_'+#dto.orderWay+'_'+#dto.page+'_'+#dto.size")
+    public ResponseResult list(@RequestBody StampPageDto dto) {
+        return service.list(dto);
+    }
 }
