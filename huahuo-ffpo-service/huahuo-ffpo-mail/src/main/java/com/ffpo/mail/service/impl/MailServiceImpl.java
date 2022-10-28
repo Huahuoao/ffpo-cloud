@@ -10,13 +10,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ffpo.mail.feign.StampFeignService;
 import com.ffpo.mail.feign.UserFeignService;
 import com.ffpo.mail.mapper.MailMapper;
+import com.ffpo.mail.mapper.ShippingMailMapper;
 import com.ffpo.mail.service.MailService;
+import com.ffpo.mail.service.ShippingMailService;
 import com.huahuo.model.common.dtos.PageResponseResult;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.mail.dtos.MailDto;
 import com.huahuo.model.mail.dtos.MailPageDto;
 import com.huahuo.model.mail.pojos.Mail;
+import com.huahuo.model.mail.pojos.ShippingMail;
 import com.huahuo.utils.common.GPSUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,8 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     private StampFeignService stampFeignService;
     @Autowired
     private UserFeignService userFeignService;
+    @Autowired
+    private ShippingMailService shippingMailService;
 
     @Override
     public ResponseResult upload(MailDto dto) {
@@ -67,9 +72,8 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
                 .eq(Mail::getType, dto.getBagType())
                 .eq(Mail::getIsDelete, 0)
                 .orderByDesc(Mail::getCreteTime);
-        if(dto.getBagType()==0)
-        {
-            queryWrapper.eq(Mail::getIsSend,1);
+        if (dto.getBagType() == 0) {
+            queryWrapper.eq(Mail::getIsSend, 1);
         }
         IPage pageResult = page(page, queryWrapper);
         ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
@@ -94,7 +98,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setGetUserId(id);
         Double distance = GPSUtils.GetDistance(longitude1, latitude1, longitude2, latitude2);
         log.info("INSTANCE=------------------>" + distance + "km");
-        Double minDouble = distance * 6.0;
+        Double minDouble = distance * 1.728;
         //送达需要的时间
         int min = minDouble.intValue();
         log.info("Time=------------------>" + min + "min");
@@ -113,23 +117,28 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setStampImg(stampImg);
         mail.setUserId(mail.getSendUserId());
         save(mail);
+        log.info("mail id=="+mail.getId());
         log.info(mail.toString());
         Map resultMap = new HashMap(3);
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
         resultMap.put("sendTime", formatDateTime);
         getStamp(mail);
         return ResponseResult.okResult(resultMap);
-     }
+    }
 
     @Override
     public void getStamp(Mail mail) {
+        ShippingMail shippingMail = new ShippingMail();
+        shippingMail.setId(mail.getId());
+        shippingMail.setIsSend(0);
+        shippingMail.setSendTime(mail.getSendTime());
+        shippingMailService.save(shippingMail);
         Mail getMail;
         getMail = ObjectUtil.clone(mail);
         getMail.setType(0);
         getMail.setId(null);
         getMail.setUserId(mail.getUserId());
         save(getMail);
-
     }
 }
 
