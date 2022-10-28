@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@MapperScan("com.huahuo.user.mapper")
 public class UserApplication {
     public static void main(String[] args) {
 

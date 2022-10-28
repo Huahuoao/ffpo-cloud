@@ -14,6 +14,7 @@
     <modules>
         <module>huahuo-ffpo-user</module>
         <module>huahuo-ffpo-stamp</module>
+        <module>huahuo-ffpo-mail</module>
     </modules>
 
     <properties>

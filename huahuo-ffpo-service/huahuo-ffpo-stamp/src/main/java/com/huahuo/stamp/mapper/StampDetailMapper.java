@@ -3,6 +3,7 @@ package com.huahuo.stamp.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.huahuo.model.stamp.pojos.StampDetail;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author Administrator
@@ -10,6 +11,7 @@ import com.huahuo.model.stamp.pojos.StampDetail;
 * @createDate 2022-10-25 20:44:24
 * @Entity generator.domain.StampDetail
 */
+@Mapper
 public interface StampDetailMapper extends BaseMapper<StampDetail> {
 
 }
