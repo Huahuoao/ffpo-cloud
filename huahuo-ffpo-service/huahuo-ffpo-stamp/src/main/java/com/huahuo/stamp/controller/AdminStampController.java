@@ -3,7 +3,10 @@ package com.huahuo.stamp.controller;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.stamp.pojos.Stamp;
+import com.huahuo.model.stamp.pojos.StampDetail;
+import com.huahuo.stamp.service.StampDetailService;
 import com.huahuo.stamp.service.StampService;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +20,8 @@ import java.io.IOException;
 @RequestMapping("/admin")
 @RestController
 public class AdminStampController {
+    @Autowired
+    private StampDetailService service1;
     @Autowired
     private StampService service;
     @PostMapping("/upload/img")
@@ -37,10 +42,5 @@ public class AdminStampController {
          return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"删除成功");
     }
 
-    @GetMapping("/feign/getstampimg/{id}")
-    public String getStampImg(@PathVariable("id") Integer id)
-    {
-        Stamp byId = service.getById(id);
-        return byId.getImg();
-    }
+
 }

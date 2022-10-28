@@ -113,7 +113,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setSendTime(formatDateTime);
         //送达位置
         mail.setCreteTime(DateUtil.now());
-        String stampImg = stampFeignService.getStampImg(mail.getStampId());
+        String stampImg = stampFeignService.getStampImgAndUpdateLife(mail.getStampId());
         mail.setStampImg(stampImg);
         mail.setUserId(mail.getSendUserId());
         save(mail);

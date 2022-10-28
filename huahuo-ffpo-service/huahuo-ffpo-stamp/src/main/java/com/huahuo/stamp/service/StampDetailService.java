@@ -19,4 +19,6 @@ public interface StampDetailService extends IService<StampDetail> {
     ResponseResult create(UserStampDetailDto dto);
 
     ResponseResult update(UserStampDetailDto dto);
+
+
 }

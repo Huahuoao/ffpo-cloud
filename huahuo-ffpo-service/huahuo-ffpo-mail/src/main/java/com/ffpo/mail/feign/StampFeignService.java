@@ -14,5 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface StampFeignService {
 
     @GetMapping("/feign/getstampimg/{id}")
+    public String getStampImgAndUpdateLife(@PathVariable("id") Integer id);
+    @GetMapping("/feign/getstampimg/simple/{id}")
     public String getStampImg(@PathVariable("id") Integer id);
 }
