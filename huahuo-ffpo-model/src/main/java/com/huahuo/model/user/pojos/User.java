@@ -107,6 +107,18 @@ public class User implements Serializable {
     @TableField(value = "salt")
     private String salt;
 
+    /**
+     * 
+     */
+    @TableField(value = "longitude")
+    private Double longitude;
+
+    /**
+     * 
+     */
+    @TableField(value = "latitude")
+    private Double latitude;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -136,7 +148,9 @@ public class User implements Serializable {
             && (this.getCreteTime() == null ? other.getCreteTime() == null : this.getCreteTime().equals(other.getCreteTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()))
             && (this.getStampBagId() == null ? other.getStampBagId() == null : this.getStampBagId().equals(other.getStampBagId()))
-            && (this.getSalt() == null ? other.getSalt() == null : this.getSalt().equals(other.getSalt()));
+            && (this.getSalt() == null ? other.getSalt() == null : this.getSalt().equals(other.getSalt()))
+            && (this.getLongitude() == null ? other.getLongitude() == null : this.getLongitude().equals(other.getLongitude()))
+            && (this.getLatitude() == null ? other.getLatitude() == null : this.getLatitude().equals(other.getLatitude()));
     }
 
     @Override
@@ -158,6 +172,8 @@ public class User implements Serializable {
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         result = prime * result + ((getStampBagId() == null) ? 0 : getStampBagId().hashCode());
         result = prime * result + ((getSalt() == null) ? 0 : getSalt().hashCode());
+        result = prime * result + ((getLongitude() == null) ? 0 : getLongitude().hashCode());
+        result = prime * result + ((getLatitude() == null) ? 0 : getLatitude().hashCode());
         return result;
     }
 
@@ -182,6 +198,8 @@ public class User implements Serializable {
         sb.append(", updateTime=").append(updateTime);
         sb.append(", stampBagId=").append(stampBagId);
         sb.append(", salt=").append(salt);
+        sb.append(", longitude=").append(longitude);
+        sb.append(", latitude=").append(latitude);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

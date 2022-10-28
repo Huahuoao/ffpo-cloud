@@ -4,6 +4,7 @@ import com.ffpo.mail.service.MailService;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.mail.dtos.MailDto;
 import com.huahuo.model.mail.dtos.MailPageDto;
+import com.huahuo.model.mail.pojos.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,7 +27,7 @@ public class MailController {
      * @param
      * @return
      */
-    @CacheEvict(value = "mailPageCacahe",allEntries = true)
+    @CacheEvict(value = "mailPageCacahe",key="#dto.userId+'_'+'2'+'_'+#dto.page+'_'+#dto.size")
     @PostMapping("/upload/draft")
     public ResponseResult uploadByDraft(@RequestBody MailDto dto){
         return service.upload(dto);
@@ -44,4 +45,15 @@ public class MailController {
         return service.list(dto);
 
     }
+
+@PostMapping("/send/mail/random")
+    public ResponseResult senMailRandom(@RequestBody Mail mail)
+{
+    return service.senMailRandom(mail);
+}
+
+
+
+
+
 }
