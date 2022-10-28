@@ -6,7 +6,6 @@ import com.ffpo.mail.service.ShippingMailService;
 import com.huahuo.model.mail.pojos.Mail;
 import com.huahuo.model.mail.pojos.ShippingMail;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -34,6 +33,8 @@ public class MailSchedule {
             if(date1.compareTo(date2)==-1){
                 Mail byId = mailService.getById(shippingMail.getId());
                 byId.setIsSend(1);
+                mailService.updateById(byId);
+                shippingMailService.removeById(shippingMail);
             }
         }
     }
