@@ -1,13 +1,12 @@
-package com.huahuo.model.user.pojos;
+package generator.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 
@@ -87,13 +86,13 @@ public class User implements Serializable {
      * 创建时间
      */
     @TableField(value = "crete_time")
-    private String creteTime;
+    private LocalDateTime creteTime;
 
     /**
      * 修改时间
      */
     @TableField(value = "update_time")
-    private String updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 邮票包id

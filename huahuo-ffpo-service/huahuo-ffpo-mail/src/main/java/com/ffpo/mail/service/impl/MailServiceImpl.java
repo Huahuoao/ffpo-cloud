@@ -2,6 +2,7 @@ package com.ffpo.mail.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -62,10 +63,14 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         dto.checkParam();
         IPage page = new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<Mail> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Mail::getSendUserId, dto.getUserId())
+        queryWrapper.eq(Mail::getUserId, dto.getUserId())
                 .eq(Mail::getType, dto.getBagType())
                 .eq(Mail::getIsDelete, 0)
                 .orderByDesc(Mail::getCreteTime);
+        if(dto.getBagType()==0)
+        {
+            queryWrapper.eq(Mail::getIsSend,1);
+        }
         IPage pageResult = page(page, queryWrapper);
         ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
         responseResult.setData(pageResult.getRecords());
@@ -76,33 +81,56 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     public ResponseResult senMailRandom(Mail mail) {
         Integer id = userFeignService.getRandomUserId();
         Map<String, Double> getMap = userFeignService.getGPS(id);
-        Double longitude2 = getMap.get("longitude");
-        Double latitude2 = getMap.get("latitude");
+//        Double longitude2 = getMap.get("longitude");
+//        Double latitude2 = getMap.get("latitude");
         Integer sendUserId = mail.getSendUserId();
-        Map<String, Double> sendMap =  userFeignService.getGPS(sendUserId);
-        Double longitude1 = sendMap.get("longitude");
-        Double latitude1 =  sendMap.get("latitude");
+        Map<String, Double> sendMap = userFeignService.getGPS(sendUserId);
+//        Double longitude1 = sendMap.get("longitude");
+//        Double latitude1 =  sendMap.get("latitude");
+        Double longitude1 = 119.27345;
+        Double latitude1 = 26.04769;
+        Double longitude2 = 121.48941;
+        Double latitude2 = 31.40527;
         mail.setGetUserId(id);
         Double distance = GPSUtils.GetDistance(longitude1, latitude1, longitude2, latitude2);
-        Double minDouble = distance*3;
+        log.info("INSTANCE=------------------>" + distance + "km");
+        Double minDouble = distance * 6.0;
         //送达需要的时间
-        long min = Math.round(minDouble);
+        int min = minDouble.intValue();
+        log.info("Time=------------------>" + min + "min");
         String now = DateUtil.now();
         Date date = DateUtil.parse(now);
         //获取送达时间
-        DateUtil.offsetMinute(date, (int) min);
-        log.info("送达时间=="+date);
-        String formatDateTime = DateUtil.formatDateTime(date);
+        Date dateTime = DateUtil.offsetMinute(date, min);
+        String formatDateTime = DateUtil.formatDateTime(dateTime);
+        log.info("现在时间==" + DateUtil.now());
+        log.info("送达时间==" + dateTime);
+        //送出位置
         mail.setSendTime(formatDateTime);
+        //送达位置
+        mail.setCreteTime(DateUtil.now());
+        String stampImg = stampFeignService.getStampImg(mail.getStampId());
+        mail.setStampImg(stampImg);
+        mail.setUserId(mail.getSendUserId());
+        save(mail);
         log.info(mail.toString());
         Map resultMap = new HashMap(3);
-        resultMap.put("code",AppHttpCodeEnum.SUCCESS.getCode());
-        resultMap.put("sendTime",formatDateTime);
-       return ResponseResult.okResult(resultMap);
-
+        resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
+        resultMap.put("sendTime", formatDateTime);
+        getStamp(mail);
+        return ResponseResult.okResult(resultMap);
      }
 
+    @Override
+    public void getStamp(Mail mail) {
+        Mail getMail;
+        getMail = ObjectUtil.clone(mail);
+        getMail.setType(0);
+        getMail.setId(null);
+        getMail.setUserId(mail.getUserId());
+        save(getMail);
 
+    }
 }
 
 

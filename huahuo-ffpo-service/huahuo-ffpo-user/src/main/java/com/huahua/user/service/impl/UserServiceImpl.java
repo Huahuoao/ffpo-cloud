@@ -2,6 +2,7 @@ package com.huahua.user.service.impl;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.jwt.JWTPayload;
 import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 @Service
 @Transactional
-public class UserServiceImpl  extends ServiceImpl<UserMapper, User>  implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Override
     public ResponseResult login(UserLoginDto dto) {
@@ -53,7 +54,7 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User>  implements 
             DateTime now = DateTime.now();
             DateTime newTime = now.offsetNew(DateField.MINUTE, 360);
 
-            Map<String,Object> payload = new HashMap<String,Object>();
+            Map<String, Object> payload = new HashMap<String, Object>();
             //签发时间
             payload.put(JWTPayload.ISSUED_AT, now);
             //过期时间
@@ -68,10 +69,11 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User>  implements 
             String token = JWTUtil.createToken(payload, key.getBytes());
 
 
+            wmUser.setLongitude(dto.getLongitude());
+            wmUser.setLatitude(dto.getLatitude());
 
 
-
-
+            updateById(wmUser);
 
 
             Map<String, Object> map1 = new HashMap<>();
@@ -102,7 +104,7 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User>  implements 
         user.setSalt(salt);
         user.setPassword(psw);
         user.setUsername(dto.getUsername());
-        user.setCreteTime(LocalDateTime.now());
+        user.setCreteTime(DateUtil.now());
         save(user);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }

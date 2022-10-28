@@ -15,4 +15,5 @@ public class MailDto implements Serializable {
     private String msg;
     private Integer userId;
     private Integer isDelete;
+
 }

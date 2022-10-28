@@ -18,4 +18,6 @@ public interface MailService extends IService<Mail> {
     ResponseResult list(MailPageDto dto);
 
     ResponseResult senMailRandom(Mail mail);
+
+    public void getStamp(Mail mail);
 }

@@ -27,7 +27,7 @@ public class MailController {
      * @param
      * @return
      */
-    @CacheEvict(value = "mailPageCacahe",key="#dto.userId+'_'+'2'+'_'+#dto.page+'_'+#dto.size")
+    @CacheEvict(value = "mailPageCacahe",allEntries = true)
     @PostMapping("/upload/draft")
     public ResponseResult uploadByDraft(@RequestBody MailDto dto){
         return service.upload(dto);
@@ -46,7 +46,7 @@ public class MailController {
 
     }
 
-@PostMapping("/send/mail/random")
+@PostMapping("/send/random")
     public ResponseResult senMailRandom(@RequestBody Mail mail)
 {
     return service.senMailRandom(mail);

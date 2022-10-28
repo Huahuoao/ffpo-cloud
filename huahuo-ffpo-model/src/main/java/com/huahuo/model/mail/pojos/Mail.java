@@ -19,6 +19,9 @@ public class Mail implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+
+    @TableField("user_id")
+    private  Integer userId;
     /**
      * 是否送出
      */

@@ -67,6 +67,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
         Stamp byId = stampService.getById(stampTypeId);
         stampDetail.setLife(0.99);
         stampDetail.setMsg(byId.getMsg());
+        stampDetail.setImg(byId.getImg());
         save(stampDetail);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "获得新的邮票！");
     }
