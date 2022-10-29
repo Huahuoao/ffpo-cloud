@@ -25,6 +25,8 @@ public class StampDetail implements Serializable {
     /**
      * 
      */
+    @TableField(value = "is_like")
+    private Integer isLike;
     @TableField(value = "stamp_type_id")
     private Integer stampTypeId;
 

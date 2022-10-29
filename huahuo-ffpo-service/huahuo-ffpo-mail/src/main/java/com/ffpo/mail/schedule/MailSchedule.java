@@ -23,7 +23,8 @@ public class MailSchedule {
     private MailService mailService;
     @Autowired
     private ShippingMailService shippingMailService;
-    @Scheduled(cron = "0 0/30 * * * ?" )
+    //每五分钟执行一次
+    @Scheduled(cron = "0/5 * * * * ?" )
     public void updateMailDS()
     {
         List<ShippingMail> list = shippingMailService.list();
@@ -37,5 +38,6 @@ public class MailSchedule {
                 shippingMailService.removeById(shippingMail);
             }
         }
+        log.info("更新邮件成功！当前时间为===>"+DateUtil.now());
     }
 }

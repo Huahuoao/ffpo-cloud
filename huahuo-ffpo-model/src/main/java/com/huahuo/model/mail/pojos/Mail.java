@@ -64,6 +64,9 @@ public class Mail implements Serializable {
     @TableField(value = "send_time")
     private String sendTime;
 
+    @TableField(value = "is_like")
+    private Integer isLike;
+
     /**
      * 0是收件箱 1是发件箱 2是草稿
      */

@@ -13,6 +13,7 @@ public class UserLoginDto implements Serializable {
     private String username;
     private String password;
     private String salt;
+    private String phone;
     //维度
     private Double latitude;
     //经度

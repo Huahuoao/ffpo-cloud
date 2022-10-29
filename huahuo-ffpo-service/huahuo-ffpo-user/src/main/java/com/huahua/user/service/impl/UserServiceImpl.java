@@ -15,14 +15,17 @@ import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.user.dtos.UserLoginDto;
 import com.huahuo.model.user.dtos.UserSignDto;
 import com.huahuo.model.user.pojos.User;
+import com.huahuo.utils.common.AliSMS;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @作者 花火
@@ -32,15 +35,23 @@ import java.util.Map;
 @Transactional
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     @Override
     public ResponseResult login(UserLoginDto dto) {
         //1.检查参数
-        if (StringUtils.isBlank(dto.getUsername()) || StringUtils.isBlank(dto.getPassword())) {
+        if ((StringUtils.isBlank(dto.getUsername()) && StringUtils.isBlank(dto.getPhone())) || StringUtils.isBlank(dto.getPassword())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "用户名或密码为空");
         }
-
+        User wmUser = null;
         //2.查询用户
-        User wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, dto.getUsername()));
+        if (StringUtils.isBlank(dto.getUsername())) {
+            wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getPhone, dto.getPhone()));
+        }
+        if (StringUtils.isBlank(dto.getPhone())) {
+            wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, dto.getUsername()));
+        }
         if (wmUser == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
         }
@@ -93,6 +104,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (StringUtils.isBlank(dto.getUsername()) || StringUtils.isBlank(dto.getPassword())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "用户名或密码为空");
         }
+        if (StringUtils.isBlank(dto.getUsername()) || StringUtils.isBlank(dto.getPassword())) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "用户名或密码为空");
+        }
+        //查重还没写
         User wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, dto.getUsername()));
         if (wmUser != null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_EXIST);
@@ -105,7 +120,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(psw);
         user.setUsername(dto.getUsername());
         user.setCreteTime(DateUtil.now());
-        save(user);
-        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+        user.setPhone(dto.getPhone());
+        String code = dto.getCode();
+        String realCode = stringRedisTemplate.opsForValue().get(dto.getPhone() + '_' + "code");
+        if (code.equals(realCode)) {
+            save(user);
+            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+        } else return ResponseResult.errorResult(AppHttpCodeEnum.SIGN_INVALID, "验证错误！");
+    }
+
+    @Override
+    public Boolean sendSMS(String phone) throws Exception {
+        String s = AliSMS.sendSMS(phone);
+        stringRedisTemplate.opsForValue().set(phone+'_'+"code", s,300,TimeUnit.SECONDS);
+        return true;
     }
 }

@@ -5,13 +5,11 @@ import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.mail.dtos.MailDto;
 import com.huahuo.model.mail.dtos.MailPageDto;
 import com.huahuo.model.mail.pojos.Mail;
+import com.huahuo.model.stamp.pojos.StampDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @作者 花火
@@ -46,13 +44,35 @@ public class MailController {
 
     }
 
-@PostMapping("/send/random")
+    @PostMapping("/send/random")
     public ResponseResult senMailRandom(@RequestBody Mail mail)
 {
     return service.senMailRandom(mail);
 }
 
-
+    @GetMapping("/like/1/{id}")
+    public ResponseResult like(@PathVariable("id") Integer id) {
+        Mail stamp = service.getById(id);
+        if(stamp.getIsLike()==0)
+        {
+            stamp.setIsLike(1);
+        }
+        return ResponseResult.okResult("收藏成功！");
+    }
+    /**
+     * 取消收藏
+     * @param id
+     * @return
+     */
+    @GetMapping("/like/0/{id}")
+    public ResponseResult unlike(@PathVariable("id") Integer id) {
+        Mail stamp = service.getById(id);
+        if(stamp.getIsLike()==1)
+        {
+            stamp.setIsLike(0);
+        }
+        return ResponseResult.okResult("取消成功！");
+    }
 
 
 

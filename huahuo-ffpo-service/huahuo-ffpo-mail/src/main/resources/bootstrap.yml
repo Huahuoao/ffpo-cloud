@@ -6,9 +6,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: fancyday.fit:8848
+        server-addr: fancyday.fit:8849
       config:
-        server-addr: fancyday.fit:8848
+        server-addr: fancyday.fit:8849
         file-extension: yml
         namespace: huahuo
         ephemeral: false

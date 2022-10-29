@@ -6,6 +6,7 @@ import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.user.dtos.UserLoginDto;
 import com.huahuo.model.user.dtos.UserSignDto;
 import com.huahuo.model.user.pojos.User;
+import com.netflix.client.ClientException;
 
 /**
 * @author Administrator
@@ -15,5 +16,6 @@ import com.huahuo.model.user.pojos.User;
 public interface UserService extends IService<User> {
     public ResponseResult login(UserLoginDto dto);
 
-    public ResponseResult sign(UserSignDto dto);
+    public ResponseResult sign(UserSignDto dto) throws ClientException;
+    public Boolean sendSMS( String phone) throws Exception;
 }

@@ -27,6 +27,8 @@ public class Stamp implements Serializable {
     @TableField(value = "img")
     private String img;
 
+
+
     /**
      * 等级
      */
