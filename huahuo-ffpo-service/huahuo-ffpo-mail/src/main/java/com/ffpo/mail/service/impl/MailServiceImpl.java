@@ -128,17 +128,19 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
 
     @Override
     public void getStamp(Mail mail) {
-        ShippingMail shippingMail = new ShippingMail();
-        shippingMail.setId(mail.getId());
-        shippingMail.setIsSend(0);
-        shippingMail.setSendTime(mail.getSendTime());
-        shippingMailService.save(shippingMail);
         Mail getMail;
         getMail = ObjectUtil.clone(mail);
         getMail.setType(0);
         getMail.setId(null);
         getMail.setUserId(mail.getUserId());
         save(getMail);
+        ShippingMail shippingMail = new ShippingMail();
+        shippingMail.setIsSend(0);
+        shippingMail.setSendTime(mail.getSendTime());
+        shippingMail.setGetId(getMail.getId());
+        shippingMail.setSendId(mail.getId());
+        shippingMailService.save(shippingMail);
+
     }
 }
 

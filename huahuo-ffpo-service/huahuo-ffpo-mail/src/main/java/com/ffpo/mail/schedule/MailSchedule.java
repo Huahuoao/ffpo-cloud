@@ -23,8 +23,8 @@ public class MailSchedule {
     private MailService mailService;
     @Autowired
     private ShippingMailService shippingMailService;
-    //每五分钟执行一次
-    @Scheduled(cron = "0/5 * * * * ?" )
+    //每1分钟执行一次
+    @Scheduled(cron = "0 0/1 * * * ?" )
     public void updateMailDS()
     {
         List<ShippingMail> list = shippingMailService.list();
@@ -32,10 +32,15 @@ public class MailSchedule {
             String date1 = shippingMail.getSendTime();
             String date2 = DateUtil.now();
             if(date1.compareTo(date2)==-1){
-                Mail byId = mailService.getById(shippingMail.getId());
-                byId.setIsSend(1);
-                mailService.updateById(byId);
+                Mail getMail = mailService.getById(shippingMail.getGetId());
+                Mail sendMail = mailService.getById(shippingMail.getSendId());
+                getMail.setIsSend(1);
+                sendMail.setIsSend(1);
+                log.info("邮件已送达！！ 邮件ID："+sendMail.getId()+"送达时间为: "+DateUtil.now());
+                mailService.updateById(getMail);
+                mailService.updateById(sendMail);
                 shippingMailService.removeById(shippingMail);
+
             }
         }
         log.info("更新邮件成功！当前时间为===>"+DateUtil.now());
