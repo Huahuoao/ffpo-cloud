@@ -15,8 +15,8 @@ public class AliSMS {
      * @return Client
      * @throws Exception
      */
-    private static String accessKeyId = "LTAI5tHhDvJrznrhCKJNfW42";
-    private static String accessKeySecret = "oPXWpFdDivohjf6lybZLGjDCp2pS10";
+    private static String accessKeyId = "accessKeyId";
+    private static String accessKeySecret = "accessKeySecret";
     public static Client createClient(String accessKeyId, String accessKeySecret) throws Exception {
         Config config = new Config()
                 // 您的 AccessKey ID
