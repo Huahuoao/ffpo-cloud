@@ -59,22 +59,31 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         try {
             JWT jwt = JWTUtil.parseToken(token);
             Integer uid = (Integer) jwt.getPayload("id");
-            String firstTime= (String) jwt.getPayload("outtime");
+            String firstTime = (String) jwt.getPayload("outtime");
             String now1 = DateUtil.now();
             log.info("Uid=" + uid.toString());
             //是否是过期
-            log.info("获取到过期时间，现在过期时间为"+firstTime);
-            log.info("判断token是否有效："+jwt.setKey(key.getBytes()).verify());
-            log.info("判断token是否没有过期："+firstTime.compareTo(now1));
-            if (!jwt.setKey(key.getBytes()).verify() || firstTime.compareTo(now1)==-1)
+            log.info("获取到过期时间，现在过期时间为" + firstTime);
+            log.info("判断token是否有效：" + jwt.setKey(key.getBytes()).verify());
+            log.info("判断token是否没有过期：" + firstTime.compareTo(now1));
+            //非法
+            if (!jwt.setKey(key.getBytes()).verify()) {
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
+            }
+            // 合法但是过期，需要重新登录
+            if (jwt.setKey(key.getBytes()).verify() && firstTime.compareTo(now1) == -1) {
+                //状态码417
+                response.setStatusCode(HttpStatus.EXPECTATION_FAILED);
+                return response.setComplete();
+            }
             //获取用户信息
             //更新token时间
             Date date = DateUtil.parse(now1);
-            Date dateTime = DateUtil.offsetDay(date,3);
+            Date dateTime = DateUtil.offsetDay(date, 3);
             String s = DateUtil.formatDateTime(dateTime);
-            jwt.setPayload("outtime",s);
-            log.info("过期时间已更新，现在过期时间为："+s);
+            jwt.setPayload("outtime", s);
+            log.info("过期时间已更新，现在过期时间为：" + s);
             //存储header中
             ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
                 httpHeaders.add("userId", uid + "");

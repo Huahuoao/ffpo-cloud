@@ -63,6 +63,8 @@ public class Mail implements Serializable {
      */
     @TableField(value = "send_time")
     private String sendTime;
+    @TableField(value = "title")
+    private String title;
 
     @TableField(value = "is_like")
     private Integer isLike;

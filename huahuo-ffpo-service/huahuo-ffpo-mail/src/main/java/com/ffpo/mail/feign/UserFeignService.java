@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Map;
 @Transactional
 public interface UserFeignService {
     @GetMapping("/gps/{id}")
-    public Map<String,Double> getGPS(@PathVariable("id") Integer id);
+    public ArrayList<String> getGPS(@PathVariable("id") Integer id);
 
     @PostMapping("/get/id/random/")
     public Integer getRandomUserId();

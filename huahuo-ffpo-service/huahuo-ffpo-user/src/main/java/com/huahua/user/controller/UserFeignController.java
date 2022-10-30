@@ -3,9 +3,12 @@ package com.huahua.user.controller;
 import com.huahua.user.mapper.UserMapper;
 import com.huahua.user.service.UserService;
 import com.huahuo.model.user.pojos.User;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +18,7 @@ import java.util.Map;
  */
 @RequestMapping("/user/feign")
 @RestController
+@Slf4j
 public class UserFeignController {
     @Autowired
     private UserService service;
@@ -22,12 +26,16 @@ public class UserFeignController {
     private UserMapper mapper;
 
     @GetMapping("/gps/{id}")
-    public Map<String, Double> getGPS(@PathVariable("id") Integer id) {
+    public ArrayList<String> getGPS(@PathVariable("id") Integer id) {
         User byId = service.getById(id);
-        Map map = new HashMap(3);
-        map.put("longitude", byId.getLongitude());
-        map.put("latitude", byId.getLatitude());
-        return null;
+        log.info(byId.toString());
+        log.info(byId.getLongitude());
+        log.info(byId.getLatitude());
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add(byId.getLongitude());
+        arrayList.add(byId.getLatitude());
+
+        return arrayList;
     }
 
     @PostMapping("/get/id/random/")

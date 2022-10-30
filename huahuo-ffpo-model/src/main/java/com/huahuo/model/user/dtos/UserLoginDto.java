@@ -14,8 +14,9 @@ public class UserLoginDto implements Serializable {
     private String password;
     private String salt;
     private String phone;
-    //维度
-    private Double latitude;
+    //纬度
+    private String latitude;
     //经度
-    private Double longitude;
+    private String longitude;
+    private String address;
 }

@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ffpo.mail.feign.StampFeignService;
 import com.ffpo.mail.feign.UserFeignService;
 import com.ffpo.mail.mapper.MailMapper;
-import com.ffpo.mail.mapper.ShippingMailMapper;
 import com.ffpo.mail.service.MailService;
 import com.ffpo.mail.service.ShippingMailService;
 import com.huahuo.model.common.dtos.PageResponseResult;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,12 +47,17 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     @Autowired
     private ShippingMailService shippingMailService;
 
+    /**
+     * 生成新草稿
+     * @param dto
+     * @return
+     */
     @Override
     public ResponseResult upload(MailDto dto) {
         Mail mail = new Mail();
         mail.setMsg(dto.getMsg());
+        mail.setTitle(dto.getTitle());
         mail.setCreteTime(DateUtil.now());
-        mail.setId(dto.getId());
         mail.setSendUserId(dto.getUserId());
         mail.setStampId(dto.getStampId());
         mail.setType(2);
@@ -63,6 +68,11 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "新草稿生成成功！");
     }
 
+    /**
+     * 分页查询
+     * @param dto
+     * @return
+     */
     @Override
     public ResponseResult list(MailPageDto dto) {
         dto.checkParam();
@@ -83,18 +93,25 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
 
     @Override
     public ResponseResult senMailRandom(Mail mail) {
+        //随机抽一个幸运用户出来获取邮件
         Integer id = userFeignService.getRandomUserId();
-        Map<String, Double> getMap = userFeignService.getGPS(id);
-//        Double longitude2 = getMap.get("longitude");
-//        Double latitude2 = getMap.get("latitude");
+        ArrayList<String> getList = userFeignService.getGPS(id);
+
+        String longitude2S = getList.get(0);
+        Double longitude2  = new Double(longitude2S);
+
+        String latitude2S = getList.get(1);
+        Double latitude2  = new Double(latitude2S);
+
         Integer sendUserId = mail.getSendUserId();
-        Map<String, Double> sendMap = userFeignService.getGPS(sendUserId);
-//        Double longitude1 = sendMap.get("longitude");
-//        Double latitude1 =  sendMap.get("latitude");
-        Double longitude1 = 119.27345;
-        Double latitude1 = 26.04769;
-        Double longitude2 = 121.48941;
-        Double latitude2 = 31.40527;
+        ArrayList<String> getListSend = userFeignService.getGPS(sendUserId);
+
+        String longitude1S = getListSend.get(0);
+        Double longitude1  = new Double(longitude1S);
+
+        String latitude1S = getListSend.get(1);
+        Double latitude1 = new Double(latitude1S);
+
         mail.setGetUserId(id);
         Double distance = GPSUtils.GetDistance(longitude1, latitude1, longitude2, latitude2);
         log.info("INSTANCE=------------------>" + distance + "km");
@@ -113,6 +130,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setSendTime(formatDateTime);
         //送达位置
         mail.setCreteTime(DateUtil.now());
+        mail.setType(1);
         String stampImg = stampFeignService.getStampImgAndUpdateLife(mail.getStampId());
         mail.setStampImg(stampImg);
         mail.setUserId(mail.getSendUserId());
