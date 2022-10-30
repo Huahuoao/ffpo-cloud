@@ -16,6 +16,7 @@ import com.huahuo.model.user.dtos.UserLoginDto;
 import com.huahuo.model.user.dtos.UserSignDto;
 import com.huahuo.model.user.pojos.User;
 import com.huahuo.utils.common.AliSMS;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @创建日期 2022/10/23 15:44
  */
 @Service
+@Slf4j
 @Transactional
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
@@ -61,21 +64,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String pswd = dto.getPassword();
         pswd = DigestUtils.md5DigestAsHex((pswd + salt).getBytes());
         if (pswd.equals(wmUser.getPassword())) {
+            String now = DateUtil.now();
             //4.返回数据  jwt
-            DateTime now = DateTime.now();
-            DateTime newTime = now.offsetNew(DateField.MINUTE, 360);
-
             Map<String, Object> payload = new HashMap<String, Object>();
             //签发时间
             payload.put(JWTPayload.ISSUED_AT, now);
             //过期时间
-            payload.put(JWTPayload.EXPIRES_AT, newTime);
+             Date date = DateUtil.parse(now);
+             Date newTime = DateUtil.offsetDay(date,3);
+             String formatDateTime =DateUtil.formatDateTime(newTime);
+             payload.put("outtime", formatDateTime);
+             log.info(newTime.toString());
             //生效时间
             payload.put(JWTPayload.NOT_BEFORE, now);
             //载荷
             payload.put("createname", "cjh");
             payload.put("id", wmUser.getId());
-
             String key = "bycbug";
             String token = JWTUtil.createToken(payload, key.getBytes());
 
