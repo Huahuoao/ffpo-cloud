@@ -1,8 +1,8 @@
 server:
-  port: 51906
+  port: 51704
 spring:
   application:
-    name: huahuo-ffpo-mail
+    name: huahuo-ffpo-shop
   cloud:
     nacos:
       discovery:

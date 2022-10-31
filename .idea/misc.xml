@@ -11,6 +11,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/huahuo-ffpo-feign-api/pom.xml" />
         <option value="$PROJECT_DIR$/huahuo-ffpo-service/huahuo-ffpo-imgs/pom.xml" />
       </set>
     </option>

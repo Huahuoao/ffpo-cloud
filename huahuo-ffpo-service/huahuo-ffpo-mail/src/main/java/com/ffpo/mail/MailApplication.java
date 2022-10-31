@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient
 @EnableCaching
 @EnableScheduling
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"com.huahuo.feign"})
 @MapperScan("com.ffpo.mail.mapper")
 public class MailApplication {
     public static void main(String[] args) {

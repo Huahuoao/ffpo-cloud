@@ -7,11 +7,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ffpo.mail.feign.StampFeignService;
-import com.ffpo.mail.feign.UserFeignService;
 import com.ffpo.mail.mapper.MailMapper;
 import com.ffpo.mail.service.MailService;
 import com.ffpo.mail.service.ShippingMailService;
+import com.huahuo.feign.StampFeignService;
+import com.huahuo.feign.UserFeignService;
 import com.huahuo.model.common.dtos.PageResponseResult;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
@@ -19,12 +19,14 @@ import com.huahuo.model.mail.dtos.MailDto;
 import com.huahuo.model.mail.dtos.MailPageDto;
 import com.huahuo.model.mail.pojos.Mail;
 import com.huahuo.model.mail.pojos.ShippingMail;
+import com.huahuo.model.user.pojos.User;
 import com.huahuo.utils.common.GPSUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +44,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         implements MailService {
     @Autowired
     private StampFeignService stampFeignService;
-    @Autowired
+   @Autowired
     private UserFeignService userFeignService;
     @Autowired
     private ShippingMailService shippingMailService;
@@ -141,6 +143,9 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
         resultMap.put("sendTime", formatDateTime);
         getStamp(mail);
+        User user = userFeignService.getById(sendUserId);
+        user.setCoinNum(user.getCoinNum()+100);
+        userFeignService.save(user);
         return ResponseResult.okResult(resultMap);
     }
 

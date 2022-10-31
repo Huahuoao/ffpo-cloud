@@ -15,6 +15,7 @@
         <module>huahuo-ffpo-user</module>
         <module>huahuo-ffpo-stamp</module>
         <module>huahuo-ffpo-mail</module>
+        <module>huahuo-ffpo-shop</module>
     </modules>
 
     <properties>
@@ -34,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>com.huahuo</groupId>
-            <artifactId>huahuo-ffpo-feign-api</artifactId>
+            <artifactId>huahuo-ffpo-feign</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!-- Spring boot starter -->

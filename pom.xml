@@ -12,10 +12,10 @@
         <module>huahuo-ffpo-common</module>
         <module>huahuo-ffpo-utils</module>
         <module>huahuo-ffpo-model</module>
-        <module>huahuo-ffpo-feign-api</module>
         <module>huahuo-ffpo-service</module>
         <module>huahuo-ffpo-gateway</module>
         <module>huahuo-ffpo-service</module>
+        <module>huahuo-ffpo-feign</module>
     </modules>
 
     <!-- 继承Spring boot工程 -->

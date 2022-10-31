@@ -4,13 +4,10 @@ import com.huahua.user.mapper.UserMapper;
 import com.huahua.user.service.UserService;
 import com.huahuo.model.user.pojos.User;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @作者 花火
@@ -42,4 +39,18 @@ public class UserFeignController {
     public Integer getRandomUserId() {
         return mapper.getRandonId().getId();
     }
+
+
+
+
+    @PostMapping("/save")
+    public void save(@RequestBody User user)
+    {
+        service.updateById(user);
+    }
+
+   @GetMapping("/get/{id}")
+    public User getById (@PathVariable("id") Integer id){
+        return service.getById(id);
+   }
 }

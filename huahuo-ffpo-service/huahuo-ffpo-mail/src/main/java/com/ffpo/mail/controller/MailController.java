@@ -5,7 +5,6 @@ import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.mail.dtos.MailDto;
 import com.huahuo.model.mail.dtos.MailPageDto;
 import com.huahuo.model.mail.pojos.Mail;
-import com.huahuo.model.stamp.pojos.StampDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;

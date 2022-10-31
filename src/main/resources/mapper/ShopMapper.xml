@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generator.mapper.ShopMapper">
+
+    <resultMap id="BaseResultMap" type="generator.domain.Shop">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="stampId" column="stamp_id" jdbcType="INTEGER"/>
+            <result property="isOnsale" column="is_onsale" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="INTEGER"/>
+            <result property="discount" column="discount" jdbcType="DOUBLE"/>
+            <result property="realPrice" column="real_price" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,stamp_id,is_onsale,
+        price,discount,real_price
+    </sql>
+</mapper>
