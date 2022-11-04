@@ -39,10 +39,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             //放行
             return chain.filter(exchange);
         }
-        if (request.getURI().getPath().contains("/admin")) {
-            //放行
-            return chain.filter(exchange);
-        }
+
         if (request.getURI().getPath().contains("/feign")) {
             //放行
             return chain.filter(exchange);

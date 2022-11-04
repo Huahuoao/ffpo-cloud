@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.stamp.pojos.Stamp;
 import com.huahuo.model.stamp.pojos.UserStampDetailDto;
+import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,5 @@ public interface StampService extends IService<Stamp> {
     String uploadImg(MultipartFile file);
 
     ResponseResult uploadStamp(Stamp stamp);
-
 
 }

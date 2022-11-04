@@ -35,6 +35,8 @@ public class StampServiceImpl extends ServiceImpl<StampMapper, Stamp>
         save(stamp);
         return  ResponseResult.okResult(stamp);
     }
+
+
 }
 
 

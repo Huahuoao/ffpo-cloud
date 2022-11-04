@@ -1,13 +1,12 @@
-package com.huahuo.model.stamp.pojos;
+package generator.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 邮票
@@ -56,7 +55,7 @@ public class Stamp implements Serializable {
      * 
      */
     @TableField(value = "create_time")
-    private String createTime;
+    private LocalDateTime createTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

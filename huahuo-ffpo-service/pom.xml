@@ -16,6 +16,7 @@
         <module>huahuo-ffpo-stamp</module>
         <module>huahuo-ffpo-mail</module>
         <module>huahuo-ffpo-shop</module>
+        <module>huahuo-ffpo-admin</module>
     </modules>
 
     <properties>

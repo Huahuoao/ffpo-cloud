@@ -62,11 +62,13 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
         stampDetail.setSignature(dto.getSignature());
         stampDetail.setStampTypeId(dto.getStampTypeId());
         stampDetail.setGetTime(DateUtil.now());
+
         stampDetail.setOwnnerId(ThreadLocalUtil.getUser().getId());
         Integer stampTypeId = stampDetail.getStampTypeId();
         Stamp byId = stampService.getById(stampTypeId);
         stampDetail.setLife(0.99);
         stampDetail.setMsg(byId.getMsg());
+        stampDetail.setType(byId.getType());
         stampDetail.setImg(byId.getImg());
         save(stampDetail);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "获得新的邮票！");
