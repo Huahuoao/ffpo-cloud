@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkfirst_app"]=self["webpackChunkfirst_app"]||[]).push([[608],{608:function(n,r,t){t.r(r),t.d(r,{default:function(){return s}});var u=t(3396);function e(n,r){return(0,u.wg)(),(0,u.iD)("div",null," 邮票展示 ")}var a=t(89);const f={},i=(0,a.Z)(f,[["render",e]]);var s=i}}]);
+//# sourceMappingURL=608.416871bd.js.map
