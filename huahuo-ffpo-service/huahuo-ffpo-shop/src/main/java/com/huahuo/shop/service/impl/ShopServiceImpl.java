@@ -74,7 +74,12 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
         Integer money = user.getCoinNum();
         if(money-price<0)
         {
-            return new ResponseResult(AppHttpCodeEnum.SUCCESS.getCode(),"金币不足，购买失败");
+            return  ResponseResult.okResult(201,"金币不足，购买失败");
+        }
+        //检测集邮册满了吗
+        if(user.getStampNum()>=user.getStampMaxNum())
+        {
+            return  ResponseResult.okResult(202,"集邮册已满，购买失败");
         }
         user.setCoinNum(money-price);
         //update

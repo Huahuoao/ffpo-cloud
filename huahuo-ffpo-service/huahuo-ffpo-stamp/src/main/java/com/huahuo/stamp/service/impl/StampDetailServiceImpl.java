@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.huahuo.feign.UserFeignService;
 import com.huahuo.model.common.dtos.PageResponseResult;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
@@ -13,10 +14,12 @@ import com.huahuo.model.stamp.dtos.StampPageDto;
 import com.huahuo.model.stamp.pojos.Stamp;
 import com.huahuo.model.stamp.pojos.StampDetail;
 import com.huahuo.model.stamp.pojos.UserStampDetailDto;
+import com.huahuo.model.user.pojos.User;
 import com.huahuo.stamp.mapper.StampDetailMapper;
 import com.huahuo.stamp.service.StampDetailService;
 import com.huahuo.stamp.service.StampService;
 import com.huahuo.utils.thread.ThreadLocalUtil;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,8 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
 
     @Autowired
     private StampService stampService;
+    @Autowired
+    private UserFeignService userFeignService;
 
     @Override
     public ResponseResult list(StampPageDto dto) {
@@ -58,12 +63,18 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
 
     @Override
     public ResponseResult create(UserStampDetailDto dto) {
+        Integer userId = ThreadLocalUtil.getUser().getId();
+        User user = userFeignService.getById(userId);
+        if(user.getStampNum()>=user.getStampMaxNum())
+        {
+            return ResponseResult.okResult(201,"集邮册已满，获取失败");
+        }
+        user.setStampNum(user.getStampNum()+1);
         StampDetail stampDetail = new StampDetail();
         stampDetail.setSignature(dto.getSignature());
         stampDetail.setStampTypeId(dto.getStampTypeId());
         stampDetail.setGetTime(DateUtil.now());
-
-        stampDetail.setOwnnerId(ThreadLocalUtil.getUser().getId());
+        stampDetail.setOwnnerId(userId);
         Integer stampTypeId = stampDetail.getStampTypeId();
         Stamp byId = stampService.getById(stampTypeId);
         stampDetail.setLife(0.99);
@@ -71,6 +82,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
         stampDetail.setType(byId.getType());
         stampDetail.setImg(byId.getImg());
         save(stampDetail);
+        userFeignService.save(user);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "获得新的邮票！");
     }
 
