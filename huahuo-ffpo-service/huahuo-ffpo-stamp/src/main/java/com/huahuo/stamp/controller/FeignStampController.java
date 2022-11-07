@@ -5,10 +5,7 @@ import com.huahuo.model.stamp.pojos.StampDetail;
 import com.huahuo.stamp.service.StampDetailService;
 import com.huahuo.stamp.service.StampService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @作者 花火
@@ -31,11 +28,23 @@ public class FeignStampController {
         service1.updateById(byId);
         return byId.getImg();
     }
-
+    @GetMapping("/feign/getstamp/simple/{id}")
+    public Stamp getStamp(@PathVariable("id") Integer id)
+    {
+        Stamp byId = service.getById(id);
+        return byId;
+    }
     @GetMapping("/feign/getstampimg/simple/{id}")
     public String getStampImg(@PathVariable("id") Integer id)
     {
         Stamp byId = service.getById(id);
         return byId.getImg();
+    }
+
+
+    @PostMapping("/feign/save")
+    public void saveStamptoUser(@RequestBody StampDetail stampDetail)
+    {
+        service1.save(stampDetail);
     }
 }

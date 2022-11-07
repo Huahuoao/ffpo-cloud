@@ -2,7 +2,7 @@ server:
   port: 51601
 spring:
   application:
-    name: huahuo-app-gateway
+    name: ffpo-gateway
   cloud:
     nacos:
       discovery:

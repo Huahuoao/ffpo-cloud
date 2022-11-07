@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ffpo.mail.mapper.MailMapper;
 import com.ffpo.mail.service.MailService;
 import com.ffpo.mail.service.ShippingMailService;
+import com.huahuo.common.constants.UserConstants;
 import com.huahuo.feign.StampFeignService;
 import com.huahuo.feign.UserFeignService;
 import com.huahuo.model.common.dtos.PageResponseResult;
@@ -27,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -95,6 +93,21 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
 
     @Override
     public ResponseResult senMailRandom(Mail mail) {
+        if(mail.getStampId()==8)
+        {
+            //百分之五十的概率，没送出。
+            Random random = new Random();
+            double v = random.nextDouble();
+            //送出失败
+            if(v<0.5)
+            {
+                //0-10
+                int i = random.nextInt(5);
+                String msg = UserConstants.MAIL_SEND_FAILED_MSG[i];
+                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(),msg);
+
+            }
+        }
         //随机抽一个幸运用户出来获取邮件
         Integer id = userFeignService.getRandomUserId();
         ArrayList<String> getList = userFeignService.getGPS(id);

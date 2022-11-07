@@ -1,18 +1,32 @@
 package com.huahuo.shop.service.impl;
 
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.huahuo.feign.StampFeignService;
+import com.huahuo.feign.UserFeignService;
+import com.huahuo.model.common.dtos.ResponseResult;
+import com.huahuo.model.common.enums.AppHttpCodeEnum;
+import com.huahuo.model.shop.dtos.ShoppingDto;
 import com.huahuo.model.shop.pojos.Shop;
+import com.huahuo.model.stamp.pojos.Stamp;
+import com.huahuo.model.stamp.pojos.StampDetail;
+import com.huahuo.model.user.pojos.User;
 import com.huahuo.shop.mapper.ShopMapper;
 import com.huahuo.shop.service.ShopService;
 import com.huahuo.utils.common.WeightedRandomUtil;
 import io.swagger.models.auth.In;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Administrator
@@ -23,6 +37,10 @@ import java.util.List;
 @Transactional
 public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
         implements ShopService {
+    @Autowired
+    private StampFeignService stampFeignService;
+    @Autowired
+    private UserFeignService userFeignService;
     @Autowired
     private ShopMapper shopMapper;
     @Autowired
@@ -36,13 +54,47 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
             stamp.setIsOnsale(1);
             discount = WeightedRandomUtil.getRandom();
             stamp.setDiscount(discount);
-            stamp.setRealPrice((int) (discount*stamp.getPrice()));
+            stamp.setRealPrice((int) (discount * stamp.getPrice()));
         }
         updateBatchById(stamps);
-       if   (redisTemplate.opsForList().size("onsale") > 0)
-             redisTemplate.opsForList().leftPop("onsale");
+        if (redisTemplate.opsForList().size("onsale") > 0)
+            redisTemplate.opsForList().leftPop("onsale");
         //存入
-           redisTemplate.opsForList().rightPushAll("onsale", stamps);
+        redisTemplate.opsForList().rightPushAll("onsale", stamps);
+    }
+
+
+    //购买邮票
+    @Override
+    public ResponseResult shopping(ShoppingDto dto) {
+        Shop byId = getById(dto.getGoodId());
+        //检测有没有钱
+        Integer price = byId.getPrice();
+        User user = userFeignService.getById(dto.getUserId());
+        Integer money = user.getCoinNum();
+        if(money-price<0)
+        {
+            return new ResponseResult(AppHttpCodeEnum.SUCCESS.getCode(),"金币不足，购买失败");
+        }
+        user.setCoinNum(money-price);
+        //update
+        userFeignService.save(user);
+        //创建购买的邮票实体
+        Stamp stamp = stampFeignService.getStamp(byId.getStampId());
+        StampDetail  stampDetail = new StampDetail();
+        BeanUtils.copyProperties(stamp,stampDetail);
+        stampDetail.setIsLike(0);
+        stampDetail.setGetTime(DateUtil.now());
+        stampDetail.setOwnnerId(dto.getUserId());
+        //创建购买邮票实体的磨损度
+        Random random = new Random();
+        double v = random.nextDouble();
+        if(v<0.5) v+=0.35;
+        String str = String.format("%.2f",v);
+        double vv = Double.parseDouble(str);
+        stampDetail.setLife(vv);
+        stampFeignService.saveStamptoUser(stampDetail);
+        return new ResponseResult(AppHttpCodeEnum.SUCCESS.getCode(), "购买成功");
     }
 }
 
