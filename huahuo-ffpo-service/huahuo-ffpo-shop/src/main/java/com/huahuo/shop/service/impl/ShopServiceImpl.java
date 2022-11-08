@@ -2,9 +2,14 @@ package com.huahuo.shop.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huahuo.feign.StampFeignService;
 import com.huahuo.feign.UserFeignService;
+import com.huahuo.model.common.dtos.PageRequestDto;
+import com.huahuo.model.common.dtos.PageResponseResult;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.shop.dtos.ShoppingDto;
@@ -61,6 +66,19 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
             redisTemplate.opsForList().leftPop("onsale");
         //存入
         redisTemplate.opsForList().rightPushAll("onsale", stamps);
+    }
+
+    @Override
+    public  ResponseResult listStampShops(PageRequestDto dto) {
+        dto.checkParam();
+        IPage page = new Page(dto.getPage(),dto.getSize());
+        LambdaQueryWrapper<Shop> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Shop::getIsOnsale,1);
+        queryWrapper.orderByAsc(Shop::getRealPrice);
+        IPage pageResult = page (page,queryWrapper);
+        ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
+        responseResult.setData(pageResult.getRecords());
+        return responseResult;
     }
 
 

@@ -19,7 +19,6 @@ import com.huahuo.stamp.mapper.StampDetailMapper;
 import com.huahuo.stamp.service.StampDetailService;
 import com.huahuo.stamp.service.StampService;
 import com.huahuo.utils.thread.ThreadLocalUtil;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

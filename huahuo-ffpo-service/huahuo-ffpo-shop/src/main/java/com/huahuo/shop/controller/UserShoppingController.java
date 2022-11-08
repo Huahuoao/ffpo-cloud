@@ -21,6 +21,14 @@ public class UserShoppingController {
     @Autowired
     private ShopService service;
 
+    /**
+     * 购买
+     * @param dto
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     */
     @PostMapping("/buy")
     public ResponseResult shopping(@RequestBody ShoppingDto dto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         return service.shopping(dto);
