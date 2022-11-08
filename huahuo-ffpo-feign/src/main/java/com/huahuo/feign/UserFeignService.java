@@ -20,6 +20,9 @@ public interface UserFeignService {
     @GetMapping("/gps/{id}")
     ArrayList<String> getGPS(@PathVariable("id") Integer id);
 
+    @GetMapping("/get/userid/thread")
+    public Integer getUserIdFromThread();
+
     @PostMapping("/get/id/random/")
     Integer getRandomUserId();
 

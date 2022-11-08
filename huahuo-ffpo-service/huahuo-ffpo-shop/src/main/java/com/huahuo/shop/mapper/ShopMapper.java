@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.huahuo.model.shop.pojos.Shop;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ import java.util.List;
 public interface ShopMapper extends BaseMapper<Shop> {
     @Select("SELECT * FROM shop ORDER BY RAND() LIMIT 10")
     public List<Shop> onSale();
+    @Update("update shop set is_onsale = 0 where (1=1)")
+    public void shopInit();
 }
 
 

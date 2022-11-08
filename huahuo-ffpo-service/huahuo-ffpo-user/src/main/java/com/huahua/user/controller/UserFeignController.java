@@ -3,6 +3,7 @@ package com.huahua.user.controller;
 import com.huahua.user.mapper.UserMapper;
 import com.huahua.user.service.UserService;
 import com.huahuo.model.user.pojos.User;
+import com.huahuo.utils.thread.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,10 @@ public class UserFeignController {
         return mapper.getRandonId().getId();
     }
 
-
-
+   @GetMapping("/get/userid/thread")
+   public Integer getUserIdFromThread(){
+        return ThreadLocalUtil.getUser().getId();
+   }
 
     @PostMapping("/save")
     public void save(@RequestBody User user)

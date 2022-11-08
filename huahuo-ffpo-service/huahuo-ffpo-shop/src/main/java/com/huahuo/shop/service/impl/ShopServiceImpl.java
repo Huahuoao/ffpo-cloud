@@ -48,11 +48,11 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
     private UserFeignService userFeignService;
     @Autowired
     private ShopMapper shopMapper;
-    @Autowired
-    private RedisTemplate redisTemplate;
+
 
     @Override
     public void onSaleSchedule() {
+        shopMapper.shopInit();
         List<Shop> stamps = shopMapper.onSale();
         Double discount;
         for (Shop stamp : stamps) {
@@ -62,20 +62,16 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
             stamp.setRealPrice((int) (discount * stamp.getPrice()));
         }
         updateBatchById(stamps);
-        if (redisTemplate.opsForList().size("onsale") > 0)
-            redisTemplate.opsForList().leftPop("onsale");
-        //存入
-        redisTemplate.opsForList().rightPushAll("onsale", stamps);
     }
 
     @Override
-    public  ResponseResult listStampShops(PageRequestDto dto) {
+    public ResponseResult listStampShops(PageRequestDto dto) {
         dto.checkParam();
-        IPage page = new Page(dto.getPage(),dto.getSize());
+        IPage page = new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<Shop> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Shop::getIsOnsale,1);
+        queryWrapper.eq(Shop::getIsOnsale, 1);
         queryWrapper.orderByAsc(Shop::getRealPrice);
-        IPage pageResult = page (page,queryWrapper);
+        IPage pageResult = page(page, queryWrapper);
         ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
         responseResult.setData(pageResult.getRecords());
         return responseResult;
@@ -90,30 +86,28 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
         Integer price = byId.getPrice();
         User user = userFeignService.getById(dto.getUserId());
         Integer money = user.getCoinNum();
-        if(money-price<0)
-        {
-            return  ResponseResult.okResult(201,"金币不足，购买失败");
+        if (money - price < 0) {
+            return ResponseResult.okResult(201, "金币不足，购买失败");
         }
         //检测集邮册满了吗
-        if(user.getStampNum()>=user.getStampMaxNum())
-        {
-            return  ResponseResult.okResult(202,"集邮册已满，购买失败");
+        if (user.getStampNum() >= user.getStampMaxNum()) {
+            return ResponseResult.okResult(202, "集邮册已满，购买失败");
         }
-        user.setCoinNum(money-price);
+        user.setCoinNum(money - price);
         //update
         userFeignService.save(user);
         //创建购买的邮票实体
         Stamp stamp = stampFeignService.getStamp(byId.getStampId());
-        StampDetail  stampDetail = new StampDetail();
-        BeanUtils.copyProperties(stamp,stampDetail);
+        StampDetail stampDetail = new StampDetail();
+        BeanUtils.copyProperties(stamp, stampDetail);
         stampDetail.setIsLike(0);
         stampDetail.setGetTime(DateUtil.now());
         stampDetail.setOwnnerId(dto.getUserId());
         //创建购买邮票实体的磨损度
         Random random = new Random();
         double v = random.nextDouble();
-        if(v<0.5) v+=0.35;
-        String str = String.format("%.2f",v);
+        if (v < 0.5) v += 0.35;
+        String str = String.format("%.2f", v);
         double vv = Double.parseDouble(str);
         stampDetail.setLife(vv);
         stampFeignService.saveStamptoUser(stampDetail);
