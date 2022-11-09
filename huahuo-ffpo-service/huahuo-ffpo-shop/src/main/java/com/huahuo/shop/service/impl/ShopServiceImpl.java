@@ -53,6 +53,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
 
     @Override
     public void onSaleSchedule() {
+        shopMapper.initStampShop();
         List<Shop> stamps = shopMapper.onSale();
         Double discount;
         for (Shop stamp : stamps) {
@@ -62,10 +63,6 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
             stamp.setRealPrice((int) (discount * stamp.getPrice()));
         }
         updateBatchById(stamps);
-        if (redisTemplate.opsForList().size("onsale") > 0)
-            redisTemplate.opsForList().leftPop("onsale");
-        //存入
-        redisTemplate.opsForList().rightPushAll("onsale", stamps);
     }
 
     @Override
