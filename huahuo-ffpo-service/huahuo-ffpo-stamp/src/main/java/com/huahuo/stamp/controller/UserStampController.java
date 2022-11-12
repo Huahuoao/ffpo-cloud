@@ -1,6 +1,7 @@
 package com.huahuo.stamp.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.huahuo.feign.UserFeignService;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.stamp.dtos.StampDto;
@@ -10,13 +11,17 @@ import com.huahuo.model.stamp.pojos.StampDetail;
 import com.huahuo.model.stamp.pojos.UserStampDetailDto;
 import com.huahuo.stamp.service.StampDetailService;
 import com.huahuo.stamp.service.StampService;
+import com.huahuo.utils.common.RedisUtils;
 import com.huahuo.utils.thread.ThreadLocalUtil;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 
 /**
@@ -29,49 +34,54 @@ import org.springframework.web.bind.annotation.*;
 public class UserStampController {
     @Autowired
     private StampDetailService service;
-
+    @Autowired
+    private UserFeignService userFeignService;
 
     @PostMapping("/create")
-    @CacheEvict(value = "StampBagCache",allEntries = true)
-    public ResponseResult create(@RequestBody UserStampDetailDto dto){
+    public ResponseResult create(@RequestBody UserStampDetailDto dto) {
+        RedisUtils.clearStampCaChe(userFeignService.getUserIdFromThread());
         return service.create(dto);
     }
 
     @PostMapping("/update")
-    public ResponseResult update(@RequestBody UserStampDetailDto dto){
-       return  service.update(dto);
+    public ResponseResult update(@RequestBody UserStampDetailDto dto) {
+        RedisUtils.clearStampCaChe(userFeignService.getUserIdFromThread());
+        return service.update(dto);
     }
 
     @PostMapping("/list")
-    @Cacheable(value = "StampBagCache",key = "#dto.userId+'_'+#dto.orderWay+'_'+#dto.page+'_'+#dto.size")
+    @Cacheable(value = "StampBagCache", key = "#dto.userId+'_'+#dto.orderWay+'_'+#dto.page+'_'+#dto.size")
     public ResponseResult list(@RequestBody StampPageDto dto) {
         return service.list(dto);
     }
 
     /**
      * 收藏
+     *
      * @param id
      * @return
      */
     @GetMapping("/like/1/{id}")
     public ResponseResult like(@PathVariable("id") Integer id) {
+        RedisUtils.clearStampCaChe(userFeignService.getUserIdFromThread());
         StampDetail stamp = service.getById(id);
-        if(stamp.getIsLike()==0)
-        {
+        if (stamp.getIsLike() == 0) {
             stamp.setIsLike(1);
         }
         return ResponseResult.okResult("收藏成功！");
     }
+
     /**
      * 取消收藏
+     *
      * @param id
      * @return
      */
     @GetMapping("/like/0/{id}")
     public ResponseResult unlike(@PathVariable("id") Integer id) {
+        RedisUtils.clearStampCaChe(userFeignService.getUserIdFromThread());
         StampDetail stamp = service.getById(id);
-        if(stamp.getIsLike()==1)
-        {
+        if (stamp.getIsLike() == 1) {
             stamp.setIsLike(0);
         }
         return ResponseResult.okResult("取消成功！");
