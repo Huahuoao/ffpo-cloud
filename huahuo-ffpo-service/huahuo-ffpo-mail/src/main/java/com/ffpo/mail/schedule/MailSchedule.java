@@ -41,9 +41,9 @@ public class MailSchedule {
                 User sendUser = userFeignService.getById(shippingMail.getSendId());
                 Mail getMail = mailService.getById(shippingMail.getGetId());
                 Mail sendMail = mailService.getById(shippingMail.getSendId());
+                log.info(getMail.toString(),getUser.toString(),sendMail.toString(),sendUser.toString());
                 getMail.setIsSend(1);
                 sendMail.setIsSend(1);
-                log.info("邮件已送达！！ 邮件ID：" + sendMail.getId() + "送达时间为: " + DateUtil.now());
                 getUser.setCoinNum(getUser.getCoinNum() + 80);
                 sendUser.setCoinNum(sendUser.getCoinNum() + 100);
                 userFeignService.save(getUser);
@@ -51,7 +51,7 @@ public class MailSchedule {
                 mailService.updateById(getMail);
                 mailService.updateById(sendMail);
                 shippingMailService.removeById(shippingMail);
-
+                log.info("邮件已送达！！ 邮件ID：" + sendMail.getId() + "送达时间为: " + DateUtil.now());
             }
         }
         log.info("更新邮件成功！当前时间为===>" + DateUtil.now());

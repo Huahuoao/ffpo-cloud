@@ -1,5 +1,5 @@
 server:
-  port: 51704
+  port: 51608
 spring:
   application:
     name: huahuo-ffpo-shop

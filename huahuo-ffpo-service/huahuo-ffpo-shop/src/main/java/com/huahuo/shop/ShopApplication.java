@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
 /**
- * @作者 花火
+ * @作者 花火.
  * @创建日期 2022/10/31 15:31
  */
 @EnableCaching

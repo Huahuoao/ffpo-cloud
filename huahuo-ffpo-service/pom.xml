@@ -8,32 +8,36 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>com.huahuo</groupId>
 
     <artifactId>huahuo-ffpo-service</artifactId>
     <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>huahuo-ffpo-user</module>
-        <module>huahuo-ffpo-stamp</module>
         <module>huahuo-ffpo-mail</module>
         <module>huahuo-ffpo-shop</module>
+        <module>huahuo-ffpo-stamp</module>
+        <module>huahuo-ffpo-user</module>
         <module>huahuo-ffpo-admin</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <!-- 引入依赖模块 -->
         <dependency>
             <groupId>com.huahuo</groupId>
             <artifactId>huahuo-ffpo-model</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.huahuo</groupId>
             <artifactId>huahuo-ffpo-common</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.huahuo</groupId>
             <artifactId>huahuo-ffpo-feign</artifactId>
@@ -58,4 +62,5 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
     </dependencies>
+
 </project>
