@@ -1,13 +1,12 @@
-package com.huahuo.model.mail.pojos;
+package generator.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 
@@ -56,13 +55,13 @@ public class Mail implements Serializable {
      * 创建时间
      */
     @TableField(value = "crete_time")
-    private String creteTime;
+    private LocalDateTime creteTime;
 
     /**
      * 送达时间
      */
     @TableField(value = "send_time")
-    private String sendTime;
+    private LocalDateTime sendTime;
 
     /**
      * 0是收件箱 1是发件箱 2是草稿

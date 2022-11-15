@@ -12,6 +12,8 @@ spring:
         file-extension: yml
         namespace: huahuo
         ephemeral: false
+logging:
+  level=debug:
 feign:
   hystrix:
     enabled: true

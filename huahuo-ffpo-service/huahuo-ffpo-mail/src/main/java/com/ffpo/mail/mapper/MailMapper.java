@@ -2,8 +2,12 @@ package com.ffpo.mail.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.huahuo.model.mail.dtos.EsMailDto;
 import com.huahuo.model.mail.pojos.Mail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * @author Administrator
@@ -14,6 +18,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface MailMapper extends BaseMapper<Mail> {
 
+    @Select("select id,send_time,stamp_img,send_user_id,title,tags,msg from mail where is_send = 1")
+    public List<EsMailDto>  esList();
 }
 
 

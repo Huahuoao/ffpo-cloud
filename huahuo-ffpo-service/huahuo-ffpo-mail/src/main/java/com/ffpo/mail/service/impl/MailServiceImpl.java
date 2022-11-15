@@ -3,6 +3,7 @@ package com.ffpo.mail.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,11 +12,14 @@ import com.ffpo.mail.mapper.MailMapper;
 import com.ffpo.mail.service.MailService;
 import com.ffpo.mail.service.ShippingMailService;
 import com.huahuo.common.constants.UserConstants;
+import com.huahuo.feign.MailFeignService;
 import com.huahuo.feign.StampFeignService;
 import com.huahuo.feign.UserFeignService;
 import com.huahuo.model.common.dtos.PageResponseResult;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
+import com.huahuo.model.mail.dtos.EsMailDto;
+import com.huahuo.model.mail.dtos.EsSearchDto;
 import com.huahuo.model.mail.dtos.MailDto;
 import com.huahuo.model.mail.dtos.MailPageDto;
 import com.huahuo.model.mail.pojos.Mail;
@@ -23,11 +27,24 @@ import com.huahuo.model.mail.pojos.ShippingMail;
 import com.huahuo.model.user.pojos.User;
 import com.huahuo.utils.common.GPSUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.text.Text;
+import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -42,13 +59,19 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         implements MailService {
     @Autowired
     private StampFeignService stampFeignService;
-   @Autowired
+    @Autowired
     private UserFeignService userFeignService;
     @Autowired
     private ShippingMailService shippingMailService;
+    @Autowired
+    private MailFeignService mailFeignService;
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+
 
     /**
      * 生成新草稿
+     *
      * @param dto
      * @return
      */
@@ -70,6 +93,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
 
     /**
      * 分页查询
+     *
      * @param dto
      * @return
      */
@@ -92,19 +116,17 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     }
 
     @Override
-    public ResponseResult senMailRandom(Mail mail) {
-        if(mail.getStampId()==8)
-        {
+    public ResponseResult senMailRandom(Mail mail) throws IOException {
+        if (mail.getStampId() == 8) {
             //百分之五十的概率，没送出。
             Random random = new Random();
             double v = random.nextDouble();
             //送出失败
-            if(v<0.5)
-            {
+            if (v < 0.5) {
                 //0-10
                 int i = random.nextInt(5);
                 String msg = UserConstants.MAIL_SEND_FAILED_MSG[i];
-                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(),msg);
+                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(), msg);
 
             }
         }
@@ -113,16 +135,16 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         ArrayList<String> getList = userFeignService.getGPS(id);
 
         String longitude2S = getList.get(0);
-        Double longitude2  = new Double(longitude2S);
+        Double longitude2 = new Double(longitude2S);
 
         String latitude2S = getList.get(1);
-        Double latitude2  = new Double(latitude2S);
+        Double latitude2 = new Double(latitude2S);
 
         Integer sendUserId = mail.getSendUserId();
         ArrayList<String> getListSend = userFeignService.getGPS(sendUserId);
 
         String longitude1S = getListSend.get(0);
-        Double longitude1  = new Double(longitude1S);
+        Double longitude1 = new Double(longitude1S);
 
         String latitude1S = getListSend.get(1);
         Double latitude1 = new Double(latitude1S);
@@ -150,17 +172,86 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setStampImg(stampImg);
         mail.setUserId(mail.getSendUserId());
         save(mail);
-        log.info("mail id=="+mail.getId());
+        log.info("mail id==" + mail.getId());
         log.info(mail.toString());
         Map resultMap = new HashMap(3);
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
         resultMap.put("sendTime", formatDateTime);
         getStamp(mail);
         User user = userFeignService.getById(sendUserId);
-        user.setCoinNum(user.getCoinNum()+100);
+        user.setCoinNum(user.getCoinNum() + 100);
         userFeignService.save(user);
+        if (mail.getIsPublic() == 1) {
+            EsMailDto esMailDto = new EsMailDto();
+            BeanUtils.copyProperties(esMailDto, mail);
+            mailFeignService.add(esMailDto);
+        }
         return ResponseResult.okResult(resultMap);
     }
+
+    @Override
+    public ResponseResult search(EsSearchDto dto) throws IOException {
+        //1.检查参数
+        if(dto == null || StringUtils.isBlank(dto.getSearchWords())){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        //2.设置查询条件
+        SearchRequest searchRequest = new SearchRequest("app_info_article");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        //布尔查询
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+        //关键字的分词之后查询
+        QueryStringQueryBuilder queryStringQueryBuilder = QueryBuilders.queryStringQuery(dto.getSearchWords()).field("title").field("msg").field("tags").defaultOperator(Operator.OR);
+        boolQueryBuilder.must(queryStringQueryBuilder);
+
+
+        //分页查询
+        searchSourceBuilder.from(0);
+        searchSourceBuilder.size(dto.getSize());
+
+
+
+        //设置高亮  title
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("title");
+        highlightBuilder.preTags("<font style='color: red; font-size: inherit;'>");
+        highlightBuilder.postTags("</font>");
+        searchSourceBuilder.highlighter(highlightBuilder);
+
+
+        searchSourceBuilder.query(boolQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+
+        //3.结果封装返回
+
+        List<Map> list = new ArrayList<>();
+
+        SearchHit[] hits = searchResponse.getHits().getHits();
+        for (SearchHit hit : hits) {
+            String json = hit.getSourceAsString();
+            Map map = JSON.parseObject(json, Map.class);
+            //处理高亮
+            if(hit.getHighlightFields() != null && hit.getHighlightFields().size() > 0){
+                Text[] titles = hit.getHighlightFields().get("title").getFragments();
+                String title = StringUtils.join(titles);
+                //高亮标题
+                map.put("h_title",title);
+            }else {
+                //原始标题
+                map.put("h_title",map.get("title"));
+            }
+            list.add(map);
+        }
+
+        return ResponseResult.okResult(list);
+
+    }
+
 
     @Override
     public void getStamp(Mail mail) {

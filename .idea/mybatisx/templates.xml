@@ -65,8 +65,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="FreeShop" />
-                  <option name="tableName" value="free_shop" />
+                  <option name="className" value="Mail" />
+                  <option name="tableName" value="mail" />
                 </TableUIInfo>
               </list>
             </option>
