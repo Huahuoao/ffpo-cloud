@@ -171,6 +171,8 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         String stampImg = stampFeignService.getStampImgAndUpdateLife(mail.getStampId());
         mail.setStampImg(stampImg);
         mail.setUserId(mail.getSendUserId());
+        mail.setSendAdd(userFeignService.getById(sendUserId).getAddress());
+        mail.setGetAdd(userFeignService.getById(id).getAddress());
         save(mail);
         log.info("mail id==" + mail.getId());
         log.info(mail.toString());
@@ -181,11 +183,78 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         User user = userFeignService.getById(sendUserId);
         user.setCoinNum(user.getCoinNum() + 100);
         userFeignService.save(user);
-        if (mail.getIsPublic() == 1) {
-            EsMailDto esMailDto = new EsMailDto();
-            BeanUtils.copyProperties(esMailDto, mail);
-            mailFeignService.add(esMailDto);
+        return ResponseResult.okResult(resultMap);
+    }
+
+    @Override
+    public ResponseResult senMailById(Mail mail) throws IOException {
+        if (mail.getStampId() == 8) {
+            //百分之五十的概率，没送出。
+            Random random = new Random();
+            double v = random.nextDouble();
+            //送出失败
+            if (v < 0.5) {
+                //0-10
+                int i = random.nextInt(5);
+                String msg = UserConstants.MAIL_SEND_FAILED_MSG[i];
+                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(), msg);
+
+            }
         }
+        //收到的id
+        Integer id = mail.getGetUserId();
+        ArrayList<String> getList = userFeignService.getGPS(id);
+
+        String longitude2S = getList.get(0);
+        Double longitude2 = new Double(longitude2S);
+
+        String latitude2S = getList.get(1);
+        Double latitude2 = new Double(latitude2S);
+
+        //送出的用户
+        Integer sendUserId = mail.getSendUserId();
+        ArrayList<String> getListSend = userFeignService.getGPS(sendUserId);
+
+        String longitude1S = getListSend.get(0);
+        Double longitude1 = new Double(longitude1S);
+
+        String latitude1S = getListSend.get(1);
+        Double latitude1 = new Double(latitude1S);
+
+
+        Double distance = GPSUtils.GetDistance(longitude1, latitude1, longitude2, latitude2);
+        log.info("INSTANCE=------------------>" + distance + "km");
+        Double minDouble = distance * 1.728;
+        //送达需要的时间
+        int min = minDouble.intValue();
+        log.info("Time=------------------>" + min + "min");
+        String now = DateUtil.now();
+        Date date = DateUtil.parse(now);
+        //获取送达时间
+        Date dateTime = DateUtil.offsetMinute(date, min);
+        String formatDateTime = DateUtil.formatDateTime(dateTime);
+        log.info("现在时间==" + DateUtil.now());
+        log.info("送达时间==" + dateTime);
+        //送出位置
+        mail.setSendTime(formatDateTime);
+        //送达位置
+        mail.setCreteTime(DateUtil.now());
+        mail.setType(1);
+        String stampImg = stampFeignService.getStampImgAndUpdateLife(mail.getStampId());
+        mail.setStampImg(stampImg);
+        mail.setUserId(mail.getSendUserId());
+        mail.setSendAdd(userFeignService.getById(sendUserId).getAddress());
+        mail.setGetAdd(userFeignService.getById(id).getAddress());
+        save(mail);
+        log.info("mail id==" + mail.getId());
+        log.info(mail.toString());
+        Map resultMap = new HashMap(3);
+        resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
+        resultMap.put("sendTime", formatDateTime);
+        getStamp(mail);
+        User user = userFeignService.getById(sendUserId);
+        user.setCoinNum(user.getCoinNum() + 100);
+        userFeignService.save(user);
         return ResponseResult.okResult(resultMap);
     }
 

@@ -58,9 +58,19 @@ public class MailController {
 
     }
 
+    /**
+     * 随机发送信件
+     * @param mail
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/send/random")
     public ResponseResult senMailRandom(@RequestBody Mail mail) throws IOException {
         return service.senMailRandom(mail);
+    }
+    @PostMapping("/send/id")
+    public ResponseResult senMailById(@RequestBody Mail mail) throws IOException {
+        return service.senMailById(mail);
     }
 
     @GetMapping("/like/1/{id}")

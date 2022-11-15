@@ -21,6 +21,7 @@ public interface MailService extends IService<Mail> {
     ResponseResult list(MailPageDto dto);
 
     ResponseResult senMailRandom(Mail mail) throws IOException;
+    ResponseResult senMailById(Mail mail) throws IOException;
     ResponseResult search(EsSearchDto userSearchDto) throws IOException;
     public void getStamp(Mail mail);
 }
