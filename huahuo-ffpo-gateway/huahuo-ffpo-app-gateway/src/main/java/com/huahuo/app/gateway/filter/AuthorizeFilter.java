@@ -34,6 +34,10 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             //放行
             return chain.filter(exchange);
         }
+        if (request.getURI().getPath().contains("/img")) {
+            //放行
+            return chain.filter(exchange);
+        }
 
         if (request.getURI().getPath().contains("/feign")) {
             //放行

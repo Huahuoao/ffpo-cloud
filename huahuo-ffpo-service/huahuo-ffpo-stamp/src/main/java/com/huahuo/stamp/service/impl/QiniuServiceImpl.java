@@ -41,8 +41,8 @@ public class QiniuServiceImpl implements QiniuService {
     // ...其他参数参考类注释
     UploadManager uploadManager = new UploadManager(cfg);
 
-    // 使用的是测试域名
-    private static String QINIU_IMAGE_DOMAIN = "image.fzuhuahuo.cn/";
+    // 使用域名
+    private static String QINIU_IMAGE_DOMAIN = "http://image.fzuhuahuo.cn/";
 
     // 简单上传，使用默认策略，只需要设置上传的空间名就可以了
     @Override

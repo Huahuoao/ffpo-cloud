@@ -12,12 +12,14 @@ import com.ffpo.mail.mapper.MailMapper;
 import com.ffpo.mail.service.MailService;
 import com.ffpo.mail.service.ShippingMailService;
 import com.huahuo.common.constants.UserConstants;
+import com.huahuo.feign.FriendFeignService;
 import com.huahuo.feign.MailFeignService;
 import com.huahuo.feign.StampFeignService;
 import com.huahuo.feign.UserFeignService;
 import com.huahuo.model.common.dtos.PageResponseResult;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
+import com.huahuo.model.friend.dtos.FriendIDto;
 import com.huahuo.model.mail.dtos.EsMailDto;
 import com.huahuo.model.mail.dtos.EsSearchDto;
 import com.huahuo.model.mail.dtos.MailDto;
@@ -37,13 +39,10 @@ import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
@@ -60,9 +59,12 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     @Autowired
     private StampFeignService stampFeignService;
     @Autowired
+    private FriendFeignService friendFeignService;
+    @Autowired
     private UserFeignService userFeignService;
     @Autowired
     private ShippingMailService shippingMailService;
+
     @Autowired
     private MailFeignService mailFeignService;
     @Autowired
@@ -183,6 +185,14 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         User user = userFeignService.getById(sendUserId);
         user.setCoinNum(user.getCoinNum() + 100);
         userFeignService.save(user);
+        FriendIDto friendIDto = new FriendIDto();
+        log.info("====1=====");
+        friendIDto.setIdOne(mail.getSendUserId());
+        log.info("====2===== "+mail.getSendUserId());
+        friendIDto.setIdTwo(mail.getGetUserId());
+        log.info("====3===== "+mail.getGetUserId());
+        friendFeignService.becomeFriend(friendIDto);
+        log.info("====4=====");
         return ResponseResult.okResult(resultMap);
     }
 
@@ -197,7 +207,9 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
                 //0-10
                 int i = random.nextInt(5);
                 String msg = UserConstants.MAIL_SEND_FAILED_MSG[i];
-                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(), msg);
+                mail.setType(2);
+                save(mail);
+                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(), msg+"，信件先存入草稿了哦");
 
             }
         }
@@ -255,6 +267,10 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         User user = userFeignService.getById(sendUserId);
         user.setCoinNum(user.getCoinNum() + 100);
         userFeignService.save(user);
+//        FriendIDto friendIDto = new FriendIDto();
+//        friendIDto.setIdOne(mail.getSendUserId());
+//        friendIDto.setIdTwo(mail.getGetUserId());
+//        friendFeignService.becomeFriend(friendIDto);
         return ResponseResult.okResult(resultMap);
     }
 

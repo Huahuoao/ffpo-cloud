@@ -40,6 +40,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public ResponseResult login(UserLoginDto dto) {
@@ -108,7 +110,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public ResponseResult sign(UserSignDto dto) {
-        User wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, dto.getUsername()));
+        User wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, dto.getUsername())
+                .or().eq(User::getPhone,dto.getPhone()));
         if (wmUser != null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_EXIST);
         }

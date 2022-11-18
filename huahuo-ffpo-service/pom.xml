@@ -19,6 +19,7 @@
         <module>huahuo-ffpo-stamp</module>
         <module>huahuo-ffpo-user</module>
         <module>huahuo-ffpo-admin</module>
+        <module>huahuo-ffpo-friend</module>
     </modules>
 
     <properties>

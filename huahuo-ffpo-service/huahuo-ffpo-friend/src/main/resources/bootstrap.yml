@@ -1,0 +1,17 @@
+server:
+  port: 51909
+spring:
+  application:
+    name: huahuo-ffpo-friend
+  cloud:
+    nacos:
+      discovery:
+        server-addr: fancyday.fit:8849
+      config:
+        server-addr: fancyday.fit:8849
+        file-extension: yml
+        namespace: huahuo
+        ephemeral: false
+feign:
+  hystrix:
+    enabled: true
