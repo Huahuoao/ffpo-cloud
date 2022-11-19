@@ -180,8 +180,8 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         resultMap.put("sendTime", formatDateTime);
         getStamp(mail);
         User user = userFeignService.getById(sendUserId);
+        //发邮件邮件 奖励100金币
         user.setCoinNum(user.getCoinNum() + 100);
-        userFeignService.save(user);
         FriendIDto friendIDto = new FriendIDto();
         log.info("====1=====");
         friendIDto.setIdOne(mail.getSendUserId());
@@ -190,6 +190,12 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         log.info("====3===== " + mail.getGetUserId());
         friendFeignService.becomeFriend(friendIDto);
         log.info("====4=====");
+        if(mail.getIsPublic()==1)
+        {
+           user.setCoinNum(user.getCoinNum()+100);
+           //因为公开邮件 奖励100金币
+        }
+        userFeignService.save(user);
         return ResponseResult.okResult(resultMap);
     }
 
@@ -264,10 +270,10 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         User user = userFeignService.getById(sendUserId);
         user.setCoinNum(user.getCoinNum() + 100);
         userFeignService.save(user);
-//        FriendIDto friendIDto = new FriendIDto();
-//        friendIDto.setIdOne(mail.getSendUserId());
-//        friendIDto.setIdTwo(mail.getGetUserId());
-//        friendFeignService.becomeFriend(friendIDto);
+        FriendIDto friendIDto = new FriendIDto();
+        friendIDto.setIdOne(mail.getSendUserId());
+        friendIDto.setIdTwo(mail.getGetUserId());
+        friendFeignService.becomeFriend(friendIDto);
         return ResponseResult.okResult(resultMap);
     }
 
@@ -341,6 +347,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         getMail.setType(0);
         getMail.setId(null);
         getMail.setUserId(mail.getUserId());
+        getMail.setIsPublic(3);
         save(getMail);
         ShippingMail shippingMail = new ShippingMail();
         shippingMail.setIsSend(0);
