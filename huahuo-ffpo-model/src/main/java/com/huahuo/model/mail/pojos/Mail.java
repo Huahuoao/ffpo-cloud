@@ -124,6 +124,24 @@ public class Mail implements Serializable {
     @TableField(value = "is_public")
     private Integer isPublic;
 
+    /**
+     * 
+     */
+    @TableField(value = "like_num")
+    private Integer likeNum;
+
+    /**
+     * 
+     */
+    @TableField(value = "collect_num")
+    private Integer collectNum;
+
+    /**
+     * 
+     */
+    @TableField(value = "comment_num")
+    private Integer commentNum;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -156,7 +174,10 @@ public class Mail implements Serializable {
             && (this.getIsLike() == null ? other.getIsLike() == null : this.getIsLike().equals(other.getIsLike()))
             && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
             && (this.getTags() == null ? other.getTags() == null : this.getTags().equals(other.getTags()))
-            && (this.getIsPublic() == null ? other.getIsPublic() == null : this.getIsPublic().equals(other.getIsPublic()));
+            && (this.getIsPublic() == null ? other.getIsPublic() == null : this.getIsPublic().equals(other.getIsPublic()))
+            && (this.getLikeNum() == null ? other.getLikeNum() == null : this.getLikeNum().equals(other.getLikeNum()))
+            && (this.getCollectNum() == null ? other.getCollectNum() == null : this.getCollectNum().equals(other.getCollectNum()))
+            && (this.getCommentNum() == null ? other.getCommentNum() == null : this.getCommentNum().equals(other.getCommentNum()));
     }
 
     @Override
@@ -181,6 +202,9 @@ public class Mail implements Serializable {
         result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
         result = prime * result + ((getTags() == null) ? 0 : getTags().hashCode());
         result = prime * result + ((getIsPublic() == null) ? 0 : getIsPublic().hashCode());
+        result = prime * result + ((getLikeNum() == null) ? 0 : getLikeNum().hashCode());
+        result = prime * result + ((getCollectNum() == null) ? 0 : getCollectNum().hashCode());
+        result = prime * result + ((getCommentNum() == null) ? 0 : getCommentNum().hashCode());
         return result;
     }
 
@@ -208,6 +232,9 @@ public class Mail implements Serializable {
         sb.append(", title=").append(title);
         sb.append(", tags=").append(tags);
         sb.append(", isPublic=").append(isPublic);
+        sb.append(", likeNum=").append(likeNum);
+        sb.append(", collectNum=").append(collectNum);
+        sb.append(", commentNum=").append(commentNum);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

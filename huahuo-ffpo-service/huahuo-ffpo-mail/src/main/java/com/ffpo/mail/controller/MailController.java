@@ -1,27 +1,16 @@
 package com.ffpo.mail.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.ffpo.mail.mapper.MailMapper;
 import com.ffpo.mail.service.MailService;
 import com.huahuo.model.common.dtos.ResponseResult;
-import com.huahuo.model.mail.dtos.EsMailDto;
-import com.huahuo.model.mail.dtos.EsSearchDto;
-import com.huahuo.model.mail.dtos.MailDto;
-import com.huahuo.model.mail.dtos.MailPageDto;
+import com.huahuo.model.mail.dtos.*;
 import com.huahuo.model.mail.pojos.Mail;
-import javafx.scene.control.IndexRange;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
+
 
 /**
  * @作者 花火
@@ -102,6 +91,13 @@ public class MailController {
     @PostMapping("/search")
     public ResponseResult search(@RequestBody EsSearchDto dto) throws IOException {
         return service.search(dto);
+    }
+
+    @PostMapping("list/pbmail")
+    public ResponseResult listPublicMails(@RequestBody PbMail dto)
+
+    {
+           return service.listPublicMails(dto);
     }
 }
 

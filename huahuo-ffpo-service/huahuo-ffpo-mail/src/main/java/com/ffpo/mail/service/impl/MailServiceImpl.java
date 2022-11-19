@@ -20,10 +20,7 @@ import com.huahuo.model.common.dtos.PageResponseResult;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.friend.dtos.FriendIDto;
-import com.huahuo.model.mail.dtos.EsMailDto;
-import com.huahuo.model.mail.dtos.EsSearchDto;
-import com.huahuo.model.mail.dtos.MailDto;
-import com.huahuo.model.mail.dtos.MailPageDto;
+import com.huahuo.model.mail.dtos.*;
 import com.huahuo.model.mail.pojos.Mail;
 import com.huahuo.model.mail.pojos.ShippingMail;
 import com.huahuo.model.user.pojos.User;
@@ -188,9 +185,9 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         FriendIDto friendIDto = new FriendIDto();
         log.info("====1=====");
         friendIDto.setIdOne(mail.getSendUserId());
-        log.info("====2===== "+mail.getSendUserId());
+        log.info("====2===== " + mail.getSendUserId());
         friendIDto.setIdTwo(mail.getGetUserId());
-        log.info("====3===== "+mail.getGetUserId());
+        log.info("====3===== " + mail.getGetUserId());
         friendFeignService.becomeFriend(friendIDto);
         log.info("====4=====");
         return ResponseResult.okResult(resultMap);
@@ -209,7 +206,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
                 String msg = UserConstants.MAIL_SEND_FAILED_MSG[i];
                 mail.setType(2);
                 save(mail);
-                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(), msg+"，信件先存入草稿了哦");
+                return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(), msg + "，信件先存入草稿了哦");
 
             }
         }
@@ -277,7 +274,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     @Override
     public ResponseResult search(EsSearchDto dto) throws IOException {
         //1.检查参数
-        if(dto == null || StringUtils.isBlank(dto.getSearchWords())){
+        if (dto == null || StringUtils.isBlank(dto.getSearchWords())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
@@ -296,7 +293,6 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         //分页查询
         searchSourceBuilder.from(0);
         searchSourceBuilder.size(dto.getSize());
-
 
 
         //设置高亮  title
@@ -321,14 +317,14 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
             String json = hit.getSourceAsString();
             Map map = JSON.parseObject(json, Map.class);
             //处理高亮
-            if(hit.getHighlightFields() != null && hit.getHighlightFields().size() > 0){
+            if (hit.getHighlightFields() != null && hit.getHighlightFields().size() > 0) {
                 Text[] titles = hit.getHighlightFields().get("title").getFragments();
                 String title = StringUtils.join(titles);
                 //高亮标题
-                map.put("h_title",title);
-            }else {
+                map.put("h_title", title);
+            } else {
                 //原始标题
-                map.put("h_title",map.get("title"));
+                map.put("h_title", map.get("title"));
             }
             list.add(map);
         }
@@ -353,6 +349,24 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         shippingMail.setSendId(mail.getId());
         shippingMailService.save(shippingMail);
 
+    }
+
+    @Override
+    public ResponseResult listPublicMails(PbMail dto) {
+        dto.checkParam();
+        IPage page = new Page(dto.getPage(), dto.getSize());
+        LambdaQueryWrapper<Mail> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Mail::getIsPublic, 1)
+                .eq(Mail::getIsSend, 1);
+        if (dto.getOrderWay() == 1) {
+            queryWrapper.orderByDesc(Mail::getSendTime);
+        } else if (dto.getOrderWay() == 2) {
+            queryWrapper.orderByDesc(Mail::getLikeNum);
+        }
+        IPage pageResult = page(page, queryWrapper);
+        ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
+        responseResult.setData(pageResult.getRecords());
+        return responseResult;
     }
 }
 

@@ -20,6 +20,9 @@ public interface MailMapper extends BaseMapper<Mail> {
 
     @Select("select id,send_time,stamp_img,send_user_id,title,tags,msg from mail where is_send = 1")
     public List<EsMailDto>  esList();
+
+    @Select("select * from mail where is_send = 1 and is_public = 1")
+    public List<Mail> listPbMail();
 }
 
 
