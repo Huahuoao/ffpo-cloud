@@ -25,7 +25,8 @@ public interface StampFeignService {
     public String getStampImgAndUpdateLife(@PathVariable("id") Integer id);
     @GetMapping("/feign/getstampimg/simple/{id}")
     public String getStampImg(@PathVariable("id") Integer id);
-
+    @GetMapping("/feign/getstamp/detail/{id}")
+    public StampDetail getStampDetail(@PathVariable("id") Integer id);
     @PostMapping("/feign/save")
     public void saveStamptoUser(@RequestBody StampDetail stampDetail);
 

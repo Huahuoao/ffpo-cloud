@@ -28,6 +28,11 @@ public class FeignStampController {
         service1.updateById(byId);
         return byId.getImg();
     }
+    @GetMapping("/feign/getstamp/detail/{id}")
+    public StampDetail getStampDetail(@PathVariable("id") Integer id)
+    {
+      return service1.getById(id);
+    }
     @GetMapping("/feign/getstamp/simple/{id}")
     public Stamp getStamp(@PathVariable("id") Integer id)
     {

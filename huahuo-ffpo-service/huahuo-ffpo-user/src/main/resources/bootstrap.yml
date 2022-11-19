@@ -7,6 +7,7 @@ spring:
     nacos:
       discovery:
         server-addr: fancyday.fit:8849
+        namesapce: huahuo
       config:
         server-addr: fancyday.fit:8849
         file-extension: yml

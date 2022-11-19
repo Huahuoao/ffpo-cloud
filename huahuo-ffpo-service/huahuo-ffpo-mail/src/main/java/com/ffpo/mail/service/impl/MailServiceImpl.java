@@ -129,6 +129,10 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
 
             }
         }
+        if(stampFeignService.getStampDetail(mail.getStampId()).getLife()<=0.0)
+        {
+            return ResponseResult.errorResult(202,"邮票破损");
+        }
         //随机抽一个幸运用户出来获取邮件
         Integer id = userFeignService.getRandomUserId();
         ArrayList<String> getList = userFeignService.getGPS(id);
@@ -218,6 +222,10 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
                 return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS.getCode(), msg + "，信件先存入草稿了哦");
 
             }
+        }
+        if(stampFeignService.getStampDetail(mail.getStampId()).getLife()<=0.0)
+        {
+            return ResponseResult.errorResult(202,"邮票破损");
         }
         //收到的id
         Integer id = mail.getGetUserId();

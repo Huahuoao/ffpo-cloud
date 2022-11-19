@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>friend</artifactId>
+    <artifactId>huahuo-ffpo-friend</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.huahuo</groupId>
