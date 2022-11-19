@@ -172,14 +172,17 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setUserId(mail.getSendUserId());
         mail.setSendAdd(userFeignService.getById(sendUserId).getAddress());
         mail.setGetAdd(userFeignService.getById(id).getAddress());
-        save(mail);
-        log.info("mail id==" + mail.getId());
-        log.info(mail.toString());
+
+
         Map resultMap = new HashMap(3);
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
         resultMap.put("sendTime", formatDateTime);
         getStamp(mail);
         User user = userFeignService.getById(sendUserId);
+        mail.setSendUserName(user.getUsername());
+        save(mail);
+        log.info("mail id==" + mail.getId());
+        log.info(mail.toString());
         //发邮件邮件 奖励100金币
         user.setCoinNum(user.getCoinNum() + 100);
         FriendIDto friendIDto = new FriendIDto();
@@ -258,8 +261,10 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         String stampImg = stampFeignService.getStampImgAndUpdateLife(mail.getStampId());
         mail.setStampImg(stampImg);
         mail.setUserId(mail.getSendUserId());
-        mail.setSendAdd(userFeignService.getById(sendUserId).getAddress());
+        User user = userFeignService.getById(sendUserId);
+        mail.setSendAdd(user.getAddress());
         mail.setGetAdd(userFeignService.getById(id).getAddress());
+        mail.setSendUserName(user.getUsername());
         save(mail);
         log.info("mail id==" + mail.getId());
         log.info(mail.toString());
@@ -267,7 +272,6 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
         resultMap.put("sendTime", formatDateTime);
         getStamp(mail);
-        User user = userFeignService.getById(sendUserId);
         user.setCoinNum(user.getCoinNum() + 100);
         userFeignService.save(user);
         FriendIDto friendIDto = new FriendIDto();

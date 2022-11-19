@@ -4,10 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 
@@ -142,6 +141,12 @@ public class Mail implements Serializable {
     @TableField(value = "comment_num")
     private Integer commentNum;
 
+    /**
+     * 
+     */
+    @TableField(value = "send_user_name")
+    private String sendUserName;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -177,7 +182,8 @@ public class Mail implements Serializable {
             && (this.getIsPublic() == null ? other.getIsPublic() == null : this.getIsPublic().equals(other.getIsPublic()))
             && (this.getLikeNum() == null ? other.getLikeNum() == null : this.getLikeNum().equals(other.getLikeNum()))
             && (this.getCollectNum() == null ? other.getCollectNum() == null : this.getCollectNum().equals(other.getCollectNum()))
-            && (this.getCommentNum() == null ? other.getCommentNum() == null : this.getCommentNum().equals(other.getCommentNum()));
+            && (this.getCommentNum() == null ? other.getCommentNum() == null : this.getCommentNum().equals(other.getCommentNum()))
+            && (this.getSendUserName() == null ? other.getSendUserName() == null : this.getSendUserName().equals(other.getSendUserName()));
     }
 
     @Override
@@ -205,6 +211,7 @@ public class Mail implements Serializable {
         result = prime * result + ((getLikeNum() == null) ? 0 : getLikeNum().hashCode());
         result = prime * result + ((getCollectNum() == null) ? 0 : getCollectNum().hashCode());
         result = prime * result + ((getCommentNum() == null) ? 0 : getCommentNum().hashCode());
+        result = prime * result + ((getSendUserName() == null) ? 0 : getSendUserName().hashCode());
         return result;
     }
 
@@ -235,6 +242,7 @@ public class Mail implements Serializable {
         sb.append(", likeNum=").append(likeNum);
         sb.append(", collectNum=").append(collectNum);
         sb.append(", commentNum=").append(commentNum);
+        sb.append(", sendUserName=").append(sendUserName);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
