@@ -358,7 +358,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         getMail = ObjectUtil.clone(mail);
         getMail.setType(0);
         getMail.setId(null);
-        getMail.setUserId(mail.getUserId());
+        getMail.setUserId(mail.getGetUserId());
         getMail.setIsPublic(3);
         save(getMail);
         ShippingMail shippingMail = new ShippingMail();
