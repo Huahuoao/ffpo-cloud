@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
+import lombok.Data;
 
 /**
  * 
@@ -51,6 +50,18 @@ public class Shop implements Serializable {
     @TableField(value = "real_price")
     private Integer realPrice;
 
+    /**
+     * 
+     */
+    @TableField(value = "img")
+    private String img;
+
+    /**
+     * 
+     */
+    @TableField(value = "msg")
+    private String msg;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -71,7 +82,9 @@ public class Shop implements Serializable {
             && (this.getIsOnsale() == null ? other.getIsOnsale() == null : this.getIsOnsale().equals(other.getIsOnsale()))
             && (this.getPrice() == null ? other.getPrice() == null : this.getPrice().equals(other.getPrice()))
             && (this.getDiscount() == null ? other.getDiscount() == null : this.getDiscount().equals(other.getDiscount()))
-            && (this.getRealPrice() == null ? other.getRealPrice() == null : this.getRealPrice().equals(other.getRealPrice()));
+            && (this.getRealPrice() == null ? other.getRealPrice() == null : this.getRealPrice().equals(other.getRealPrice()))
+            && (this.getImg() == null ? other.getImg() == null : this.getImg().equals(other.getImg()))
+            && (this.getMsg() == null ? other.getMsg() == null : this.getMsg().equals(other.getMsg()));
     }
 
     @Override
@@ -84,6 +97,8 @@ public class Shop implements Serializable {
         result = prime * result + ((getPrice() == null) ? 0 : getPrice().hashCode());
         result = prime * result + ((getDiscount() == null) ? 0 : getDiscount().hashCode());
         result = prime * result + ((getRealPrice() == null) ? 0 : getRealPrice().hashCode());
+        result = prime * result + ((getImg() == null) ? 0 : getImg().hashCode());
+        result = prime * result + ((getMsg() == null) ? 0 : getMsg().hashCode());
         return result;
     }
 
@@ -99,6 +114,8 @@ public class Shop implements Serializable {
         sb.append(", price=").append(price);
         sb.append(", discount=").append(discount);
         sb.append(", realPrice=").append(realPrice);
+        sb.append(", img=").append(img);
+        sb.append(", msg=").append(msg);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

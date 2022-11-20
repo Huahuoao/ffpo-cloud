@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ffpo.mail.mapper.MailMapper;
+import com.ffpo.mail.service.CollectMailService;
 import com.ffpo.mail.service.MailService;
 import com.ffpo.mail.service.ShippingMailService;
 import com.huahuo.common.constants.UserConstants;
@@ -22,6 +23,7 @@ import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.common.enums.AppHttpCodeEnum;
 import com.huahuo.model.friend.dtos.FriendIDto;
 import com.huahuo.model.mail.dtos.*;
+import com.huahuo.model.mail.pojos.CollectMail;
 import com.huahuo.model.mail.pojos.Mail;
 import com.huahuo.model.mail.pojos.ShippingMail;
 import com.huahuo.model.user.pojos.User;
@@ -65,7 +67,8 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     private UserFeignService userFeignService;
     @Autowired
     private ShippingMailService shippingMailService;
-
+    @Autowired
+private CollectMailService collectMailService;
     @Autowired
     private MailFeignService mailFeignService;
     @Autowired
@@ -106,15 +109,48 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
             if(isSuccess)
             {
                 stringRedisTemplate.opsForSet().add(key,userId.toString()); //add key value
-            }
+
             return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"点赞成功！");
-        }
+        }}
         else{
             boolean isSuccess=update().setSql("like_num = like_num -1").eq("id",dto.getMailId()).update();
             if(isSuccess)
             {
                 stringRedisTemplate.opsForSet().remove(key,userId.toString());
+
                 return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"取消点赞成功！");
+            }
+        }
+        return  ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR.getCode(),"发生错误");
+    }
+
+    @Override
+    public ResponseResult collect(MailSquareLikeDto dto) {
+        Integer userId = dto.getUserId();
+        String key = "mail:collect_num"+dto.getMailId();
+        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key,userId.toString());
+        if(BooleanUtil.isFalse(isMember))
+        {
+            boolean isSuccess=update().setSql("collect_num = collect_num +1").eq("id",dto.getMailId()).update();
+            if(isSuccess)
+            {
+                stringRedisTemplate.opsForSet().add(key,userId.toString()); //add key value
+                CollectMail collectMail = new CollectMail();
+                collectMail.setMailId(dto.getMailId());
+                collectMail.setUserId(dto.getUserId());
+                collectMailService.save(collectMail);
+            }
+            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"收藏成功！");
+        }
+        else{
+            boolean isSuccess=update().setSql("collect_num = collect_num -1").eq("id",dto.getMailId()).update();
+            if(isSuccess)
+            {
+                stringRedisTemplate.opsForSet().remove(key,userId.toString());
+                LambdaQueryWrapper<CollectMail> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(CollectMail::getMailId,dto.getMailId()).eq(CollectMail::getUserId,dto.getUserId());
+                collectMailService.remove(queryWrapper);
+                return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"取消收藏成功！");
             }
         }
         return  ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR.getCode(),"发生错误");

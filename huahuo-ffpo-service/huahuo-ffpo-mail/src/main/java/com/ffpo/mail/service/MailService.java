@@ -17,6 +17,7 @@ import java.io.IOException;
 public interface MailService extends IService<Mail> {
     ResponseResult upload(MailDto dto);
     ResponseResult like(@RequestBody MailSquareLikeDto dto );
+    ResponseResult collect(@RequestBody MailSquareLikeDto dto );
     ResponseResult list(MailPageDto dto);
 
     ResponseResult senMailRandom(Mail mail) throws IOException;
