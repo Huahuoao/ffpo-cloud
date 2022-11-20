@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generator.mapper.MailMapper">
+
+    <resultMap id="BaseResultMap" type="generator.domain.Mail">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="isSend" column="is_send" jdbcType="INTEGER"/>
+            <result property="sendUserId" column="send_user_id" jdbcType="INTEGER"/>
+            <result property="getUserId" column="get_user_id" jdbcType="INTEGER"/>
+            <result property="stampId" column="stamp_id" jdbcType="INTEGER"/>
+            <result property="msg" column="msg" jdbcType="VARCHAR"/>
+            <result property="creteTime" column="crete_time" jdbcType="TIMESTAMP"/>
+            <result property="sendTime" column="send_time" jdbcType="TIMESTAMP"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+            <result property="stampImg" column="stamp_img" jdbcType="VARCHAR"/>
+            <result property="sendAdd" column="send_add" jdbcType="VARCHAR"/>
+            <result property="getAdd" column="get_add" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="isLike" column="is_like" jdbcType="TINYINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="tags" column="tags" jdbcType="VARCHAR"/>
+            <result property="isPublic" column="is_public" jdbcType="TINYINT"/>
+            <result property="likeNum" column="like_num" jdbcType="INTEGER"/>
+            <result property="collectNum" column="collect_num" jdbcType="INTEGER"/>
+            <result property="commentNum" column="comment_num" jdbcType="INTEGER"/>
+            <result property="sendUserName" column="send_user_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,is_send,send_user_id,
+        get_user_id,stamp_id,msg,
+        crete_time,send_time,type,
+        is_delete,stamp_img,send_add,
+        get_add,user_id,is_like,
+        title,tags,is_public,
+        like_num,collect_num,comment_num,
+        send_user_name
+    </sql>
+</mapper>
