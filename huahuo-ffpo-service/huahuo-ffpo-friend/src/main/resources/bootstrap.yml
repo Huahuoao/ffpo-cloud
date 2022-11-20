@@ -15,3 +15,8 @@ spring:
 feign:
   hystrix:
     enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 10000 #单位毫秒
+        readTimeout: 10000 #单位毫秒
