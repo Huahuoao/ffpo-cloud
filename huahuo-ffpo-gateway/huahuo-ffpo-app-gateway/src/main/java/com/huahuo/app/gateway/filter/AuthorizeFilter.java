@@ -69,8 +69,8 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             }
             // 合法但是过期，需要重新登录
             if (jwt.setKey(key.getBytes()).verify() && firstTime.compareTo(now1) == -1) {
-                //状态码417
-                response.setStatusCode(HttpStatus.EXPECTATION_FAILED);
+                //状态码401
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
             //获取用户信息
