@@ -124,7 +124,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setUsername(dto.getUsername());
         user.setCreteTime(DateUtil.now());
         user.setPhone(dto.getPhone());
+        user.setHeadImg(dto.getImg());
         String code = dto.getCode();
+
         String realCode = stringRedisTemplate.opsForValue().get(dto.getPhone() + '_' + "code");
         if (code.equals(realCode) || code.equals("root")) {
             save(user);

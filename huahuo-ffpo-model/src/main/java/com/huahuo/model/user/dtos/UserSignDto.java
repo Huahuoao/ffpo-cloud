@@ -15,4 +15,5 @@ public class UserSignDto implements Serializable {
     private String salt;
     private String phone;
     private String code;
+    private String img;
 }
