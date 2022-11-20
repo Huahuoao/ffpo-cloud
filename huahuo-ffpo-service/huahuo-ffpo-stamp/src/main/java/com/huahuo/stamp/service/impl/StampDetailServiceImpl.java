@@ -62,8 +62,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
 
     @Override
     public ResponseResult create(UserStampDetailDto dto) {
-        Integer userId = ThreadLocalUtil.getUser().getId();
-        User user = userFeignService.getById(userId);
+        User user = userFeignService.getById(dto.getUserId());
         if(user.getStampNum()>=user.getStampMaxNum())
         {
             return ResponseResult.okResult(201,"集邮册已满，获取失败");
@@ -73,13 +72,15 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
         stampDetail.setSignature(dto.getSignature());
         stampDetail.setStampTypeId(dto.getStampTypeId());
         stampDetail.setGetTime(DateUtil.now());
-        stampDetail.setOwnnerId(userId);
+        stampDetail.setOwnnerId(dto.getUserId());
         Integer stampTypeId = stampDetail.getStampTypeId();
         Stamp byId = stampService.getById(stampTypeId);
         stampDetail.setLife(0.99);
         stampDetail.setMsg(byId.getMsg());
         stampDetail.setType(byId.getType());
         stampDetail.setImg(byId.getImg());
+        stampDetail.setName(byId.getName());
+        stampDetail.setLevel(byId.getLevel());
         save(stampDetail);
         userFeignService.save(user);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "获得新的邮票！");
@@ -87,7 +88,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
 
     @Override
     public ResponseResult update(UserStampDetailDto dto) {
-        StampDetail byId = getById(dto.getId());
+        StampDetail byId = getById(dto.getUserId());
         byId.setSignature(dto.getSignature());
         updateById(byId);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "修改签名成功！");

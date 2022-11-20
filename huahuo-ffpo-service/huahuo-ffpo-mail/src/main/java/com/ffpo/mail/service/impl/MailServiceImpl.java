@@ -295,8 +295,9 @@ private CollectMailService collectMailService;
         }
         //收到的id
         Integer id = mail.getGetUserId();
+        log.info("===============1=====================");
         ArrayList<String> getList = userFeignService.getGPS(id);
-
+        log.info("===============2=====================");
         String longitude2S = getList.get(0);
         Double longitude2 = new Double(longitude2S);
 

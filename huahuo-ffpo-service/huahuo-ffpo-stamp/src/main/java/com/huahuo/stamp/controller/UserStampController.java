@@ -39,19 +39,17 @@ public class UserStampController {
 
     @PostMapping("/create")
     public ResponseResult create(@RequestBody UserStampDetailDto dto) {
-        RedisUtils.clearStampCaChe(userFeignService.getUserIdFromThread());
         return service.create(dto);
     }
 
     @PostMapping("/update")
     public ResponseResult update(@RequestBody UserStampDetailDto dto) {
-        RedisUtils.clearStampCaChe(userFeignService.getUserIdFromThread());
         return service.update(dto);
     }
 
     @PostMapping("/list")
-    @Cacheable(value = "StampBagCache", key = "#dto.userId+'_'+#dto.orderWay+'_'+#dto.page+'_'+#dto.size")
     public ResponseResult list(@RequestBody StampPageDto dto) {
+
         return service.list(dto);
     }
 
@@ -63,7 +61,6 @@ public class UserStampController {
      */
     @GetMapping("/like/1/{id}")
     public ResponseResult like(@PathVariable("id") Integer id) {
-        RedisUtils.clearStampCaChe(userFeignService.getUserIdFromThread());
         StampDetail stamp = service.getById(id);
         if (stamp.getIsLike() == 0) {
             stamp.setIsLike(1);

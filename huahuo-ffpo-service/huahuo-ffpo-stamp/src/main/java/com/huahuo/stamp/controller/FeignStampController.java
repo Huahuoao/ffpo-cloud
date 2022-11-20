@@ -1,5 +1,6 @@
 package com.huahuo.stamp.controller;
 
+import com.huahuo.model.mail.pojos.Mail;
 import com.huahuo.model.stamp.pojos.Stamp;
 import com.huahuo.model.stamp.pojos.StampDetail;
 import com.huahuo.stamp.service.StampDetailService;
@@ -22,8 +23,9 @@ public class FeignStampController {
     public String getStampImgAndUpdateLife(@PathVariable("id") Integer id)
     {
         StampDetail byId = service1.getById(id);
-        Double life = byId.getLife();
+        double life = byId.getLife();
         life-=0.05;
+        life = (double) Math.round(life*100)/100;
         byId.setLife(life);
         service1.updateById(byId);
         return byId.getImg();

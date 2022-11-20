@@ -15,6 +15,6 @@ import java.net.ResponseCache;
 * @createDate 2022-11-20 15:19:12
 */
 public interface CollectMailService extends IService<CollectMail> {
-    ResponseResult list(Integer id);
+    ResponseResult listCollectedMails(Integer id);
 
 }
