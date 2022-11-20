@@ -2,6 +2,7 @@ package com.ffpo.mail.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -25,6 +26,7 @@ import com.huahuo.model.mail.pojos.Mail;
 import com.huahuo.model.mail.pojos.ShippingMail;
 import com.huahuo.model.user.pojos.User;
 import com.huahuo.utils.common.GPSUtils;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
@@ -37,9 +39,11 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
@@ -66,7 +70,8 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     private MailFeignService mailFeignService;
     @Autowired
     private RestHighLevelClient restHighLevelClient;
-
+   @Resource
+   private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 生成新草稿
@@ -88,6 +93,31 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setStampImg(img);
         save(mail);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "新草稿生成成功！");
+    }
+
+    @Override
+    public ResponseResult like(MailSquareLikeDto dto) {
+        Integer userId = dto.getUserId();
+        String key = "mail:like_num"+dto.getMailId();
+        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key,userId.toString());
+        if(BooleanUtil.isFalse(isMember))
+        {
+            boolean isSuccess=update().setSql("like_num = like_num +1").eq("id",dto.getMailId()).update();
+            if(isSuccess)
+            {
+                stringRedisTemplate.opsForSet().add(key,userId.toString()); //add key value
+            }
+            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"点赞成功！");
+        }
+        else{
+            boolean isSuccess=update().setSql("like_num = like_num -1").eq("id",dto.getMailId()).update();
+            if(isSuccess)
+            {
+                stringRedisTemplate.opsForSet().remove(key,userId.toString());
+                return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"取消点赞成功！");
+            }
+        }
+        return  ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR.getCode(),"发生错误");
     }
 
     /**

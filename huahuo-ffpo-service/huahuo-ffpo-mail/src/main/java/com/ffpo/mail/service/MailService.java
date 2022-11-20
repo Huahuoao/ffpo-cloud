@@ -3,10 +3,7 @@ package com.ffpo.mail.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.huahuo.model.common.dtos.ResponseResult;
-import com.huahuo.model.mail.dtos.EsSearchDto;
-import com.huahuo.model.mail.dtos.MailDto;
-import com.huahuo.model.mail.dtos.MailPageDto;
-import com.huahuo.model.mail.dtos.PbMail;
+import com.huahuo.model.mail.dtos.*;
 import com.huahuo.model.mail.pojos.Mail;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,7 +16,7 @@ import java.io.IOException;
  */
 public interface MailService extends IService<Mail> {
     ResponseResult upload(MailDto dto);
-
+    ResponseResult like(@RequestBody MailSquareLikeDto dto );
     ResponseResult list(MailPageDto dto);
 
     ResponseResult senMailRandom(Mail mail) throws IOException;
