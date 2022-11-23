@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class UserStampDetailDto {
-    Integer userId;
+    Integer id;
     Integer stampTypeId;
     String signature;
 }

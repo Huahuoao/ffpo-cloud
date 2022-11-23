@@ -45,8 +45,10 @@ public class MailSchedule {
             if (date1.compareTo(date2) == -1) {
                 User getUser = userFeignService.getById(shippingMail.getGetId());
                 User sendUser = userFeignService.getById(shippingMail.getSendId());
+                //
                 Mail getMail = mailService.getById(shippingMail.getGetId());
                 Mail sendMail = mailService.getById(shippingMail.getSendId());
+                //
                 log.info(getMail.toString(),getUser.toString(),sendMail.toString(),sendUser.toString());
                 getMail.setIsSend(1);
                 sendMail.setIsSend(1);

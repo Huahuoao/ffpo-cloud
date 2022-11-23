@@ -58,7 +58,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, dto.getUsername()));
         }
         if (wmUser == null) {
-            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST.getCode(),"该用户未注册");
         }
 
         //3.比对密码
@@ -95,10 +95,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             wmUser.setPassword("");
             map1.put("user", wmUser);
 
-            return ResponseResult.okResult(map1);
+            return ResponseResult.okResult(map1,"登录成功！");
 
         } else {
-            return ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_PASSWORD_ERROR);
+            return ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_PASSWORD_ERROR.getCode(),"密码错误！");
         }
     }
 
@@ -113,7 +113,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User wmUser = getOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, dto.getUsername())
                 .or().eq(User::getPhone,dto.getPhone()));
         if (wmUser != null) {
-            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_EXIST);
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_EXIST.getCode(),"该用户名或手机已被注册！");
         }
         String salt = UserConstants.USER_LOGIN_SALT;
         String password = dto.getPassword();
@@ -130,7 +130,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String realCode = stringRedisTemplate.opsForValue().get(dto.getPhone() + '_' + "code");
         if (code.equals(realCode) || code.equals("root")) {
             save(user);
-            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"注册成功");
         } else return ResponseResult.errorResult(AppHttpCodeEnum.SIGN_INVALID, "验证错误！");
     }
 

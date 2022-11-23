@@ -42,7 +42,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
         dto.checkParam();
         IPage page = new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<StampDetail> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(StampDetail::getOwnnerId, ThreadLocalUtil.getUser().getId());
+        lambdaQueryWrapper.eq(StampDetail::getOwnnerId, dto.getUserId());
         switch (dto.getOrderWay()) {
             case 0:
                 lambdaQueryWrapper.orderByDesc(StampDetail::getGetTime);
@@ -62,7 +62,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
 
     @Override
     public ResponseResult create(UserStampDetailDto dto) {
-        User user = userFeignService.getById(dto.getUserId());
+        User user = userFeignService.getById(dto.getId());
         if(user.getStampNum()>=user.getStampMaxNum())
         {
             return ResponseResult.okResult(201,"集邮册已满，获取失败");
@@ -72,7 +72,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
         stampDetail.setSignature(dto.getSignature());
         stampDetail.setStampTypeId(dto.getStampTypeId());
         stampDetail.setGetTime(DateUtil.now());
-        stampDetail.setOwnnerId(dto.getUserId());
+        stampDetail.setOwnnerId(dto.getId());
         Integer stampTypeId = stampDetail.getStampTypeId();
         Stamp byId = stampService.getById(stampTypeId);
         stampDetail.setLife(0.99);
@@ -88,7 +88,7 @@ public class StampDetailServiceImpl extends ServiceImpl<StampDetailMapper, Stamp
 
     @Override
     public ResponseResult update(UserStampDetailDto dto) {
-        StampDetail byId = getById(dto.getUserId());
+        StampDetail byId = getById(dto.getId());
         byId.setSignature(dto.getSignature());
         updateById(byId);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "修改签名成功！");

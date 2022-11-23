@@ -68,13 +68,15 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     @Autowired
     private ShippingMailService shippingMailService;
     @Autowired
-private CollectMailService collectMailService;
+    private CollectMailService collectMailService;
     @Autowired
     private MailFeignService mailFeignService;
     @Autowired
     private RestHighLevelClient restHighLevelClient;
-   @Resource
-   private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private MailMapper mailMapper;
 
     /**
      * 生成新草稿
@@ -101,59 +103,52 @@ private CollectMailService collectMailService;
     @Override
     public ResponseResult like(MailSquareLikeDto dto) {
         Integer userId = dto.getUserId();
-        String key = "mail:like_num"+dto.getMailId();
-        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key,userId.toString());
-        if(BooleanUtil.isFalse(isMember))
-        {
-            boolean isSuccess=update().setSql("like_num = like_num +1").eq("id",dto.getMailId()).update();
-            if(isSuccess)
-            {
-                stringRedisTemplate.opsForSet().add(key,userId.toString()); //add key value
+        String key = "mail:like_num" + dto.getMailId();
+        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key, userId.toString());
+        if (BooleanUtil.isFalse(isMember)) {
+            boolean isSuccess = update().setSql("like_num = like_num +1").eq("id", dto.getMailId()).update();
+            if (isSuccess) {
+                stringRedisTemplate.opsForSet().add(key, userId.toString()); //add key value
 
-            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"点赞成功！");
-        }}
-        else{
-            boolean isSuccess=update().setSql("like_num = like_num -1").eq("id",dto.getMailId()).update();
-            if(isSuccess)
-            {
-                stringRedisTemplate.opsForSet().remove(key,userId.toString());
+                return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "点赞成功！");
+            }
+        } else {
+            boolean isSuccess = update().setSql("like_num = like_num -1").eq("id", dto.getMailId()).update();
+            if (isSuccess) {
+                stringRedisTemplate.opsForSet().remove(key, userId.toString());
 
-                return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"取消点赞成功！");
+                return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "取消点赞成功！");
             }
         }
-        return  ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR.getCode(),"发生错误");
+        return ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR.getCode(), "发生错误");
     }
 
     @Override
     public ResponseResult collect(MailSquareLikeDto dto) {
         Integer userId = dto.getUserId();
-        String key = "mail:collect_num"+dto.getMailId();
-        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key,userId.toString());
-        if(BooleanUtil.isFalse(isMember))
-        {
-            boolean isSuccess=update().setSql("collect_num = collect_num +1").eq("id",dto.getMailId()).update();
-            if(isSuccess)
-            {
-                stringRedisTemplate.opsForSet().add(key,userId.toString()); //add key value
+        String key = "mail:collect_num" + dto.getMailId();
+        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key, userId.toString());
+        if (BooleanUtil.isFalse(isMember)) {
+            boolean isSuccess = update().setSql("collect_num = collect_num +1").eq("id", dto.getMailId()).update();
+            if (isSuccess) {
+                stringRedisTemplate.opsForSet().add(key, userId.toString()); //add key value
                 CollectMail collectMail = new CollectMail();
                 collectMail.setMailId(dto.getMailId());
                 collectMail.setUserId(dto.getUserId());
                 collectMailService.save(collectMail);
             }
-            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"收藏成功！");
-        }
-        else{
-            boolean isSuccess=update().setSql("collect_num = collect_num -1").eq("id",dto.getMailId()).update();
-            if(isSuccess)
-            {
-                stringRedisTemplate.opsForSet().remove(key,userId.toString());
+            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "收藏成功！");
+        } else {
+            boolean isSuccess = update().setSql("collect_num = collect_num -1").eq("id", dto.getMailId()).update();
+            if (isSuccess) {
+                stringRedisTemplate.opsForSet().remove(key, userId.toString());
                 LambdaQueryWrapper<CollectMail> queryWrapper = new LambdaQueryWrapper<>();
-                queryWrapper.eq(CollectMail::getMailId,dto.getMailId()).eq(CollectMail::getUserId,dto.getUserId());
+                queryWrapper.eq(CollectMail::getMailId, dto.getMailId()).eq(CollectMail::getUserId, dto.getUserId());
                 collectMailService.remove(queryWrapper);
-                return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(),"取消收藏成功！");
+                return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS.getCode(), "取消收藏成功！");
             }
         }
-        return  ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR.getCode(),"发生错误");
+        return ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR.getCode(), "发生错误");
     }
 
     /**
@@ -195,9 +190,8 @@ private CollectMailService collectMailService;
 
             }
         }
-        if(stampFeignService.getStampDetail(mail.getStampId()).getLife()<=0.0)
-        {
-            return ResponseResult.errorResult(202,"邮票破损");
+        if (stampFeignService.getStampDetail(mail.getStampId()).getLife() <= 0.0) {
+            return ResponseResult.errorResult(202, "邮票破损");
         }
         //随机抽一个幸运用户出来获取邮件
         Integer id = userFeignService.getRandomUserId();
@@ -242,7 +236,7 @@ private CollectMailService collectMailService;
         mail.setUserId(mail.getSendUserId());
         mail.setSendAdd(userFeignService.getById(sendUserId).getAddress());
         mail.setGetAdd(userFeignService.getById(id).getAddress());
-
+        mail.setId((int)((Math.random()*9+1)*10000000));
 
         Map resultMap = new HashMap(3);
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
@@ -263,10 +257,9 @@ private CollectMailService collectMailService;
         log.info("====3===== " + mail.getGetUserId());
         friendFeignService.becomeFriend(friendIDto);
         log.info("====4=====");
-        if(mail.getIsPublic()==1)
-        {
-           user.setCoinNum(user.getCoinNum()+100);
-           //因为公开邮件 奖励100金币
+        if (mail.getIsPublic() == 1) {
+            user.setCoinNum(user.getCoinNum() + 100);
+            //因为公开邮件 奖励100金币
         }
         userFeignService.save(user);
         return ResponseResult.okResult(resultMap);
@@ -289,9 +282,8 @@ private CollectMailService collectMailService;
 
             }
         }
-        if(stampFeignService.getStampDetail(mail.getStampId()).getLife()<=0.0)
-        {
-            return ResponseResult.errorResult(202,"邮票破损");
+        if (stampFeignService.getStampDetail(mail.getStampId()).getLife() <= 0.0) {
+            return ResponseResult.errorResult(202, "邮票破损");
         }
         //收到的id
         Integer id = mail.getGetUserId();
@@ -340,6 +332,7 @@ private CollectMailService collectMailService;
         mail.setSendAdd(user.getAddress());
         mail.setGetAdd(userFeignService.getById(id).getAddress());
         mail.setSendUserName(user.getUsername());
+        mail.setId((int)((Math.random()*9+1)*10000000));
         save(mail);
         log.info("mail id==" + mail.getId());
         log.info(mail.toString());
@@ -422,17 +415,25 @@ private CollectMailService collectMailService;
     @Override
     public void getStamp(Mail mail) {
         Mail getMail;
+
+        int uuid=(int)((Math.random()*9+1)*10000000);
         getMail = ObjectUtil.clone(mail);
         getMail.setType(0);
-        getMail.setId(null);
+        getMail.setId(uuid);
         getMail.setUserId(mail.getGetUserId());
         getMail.setIsPublic(3);
         save(getMail);
+        log.info("getmail==>id== ", getMail.getId());
+        log.info("getmail==>integer== ", uuid);
         ShippingMail shippingMail = new ShippingMail();
         shippingMail.setIsSend(0);
+        //设置送达时间
         shippingMail.setSendTime(mail.getSendTime());
-        shippingMail.setGetId(getMail.getId());
+        //设置得到信件id
+        shippingMail.setGetId(uuid);
+        //设置送出信件id
         shippingMail.setSendId(mail.getId());
+
         shippingMailService.save(shippingMail);
 
     }
