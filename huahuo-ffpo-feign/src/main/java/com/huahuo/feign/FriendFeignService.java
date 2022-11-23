@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @作者 花火
  * @创建日期 2022/11/18 20:35
  */
-@FeignClient(name = "huahuo-ffpo-friend", path = "/api")
+@FeignClient(name = "huahuo-ffpo-friend", path = "/friend/feign")
 @Component
 public interface FriendFeignService {
     @PostMapping("/become")

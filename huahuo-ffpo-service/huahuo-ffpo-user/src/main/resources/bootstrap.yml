@@ -15,5 +15,9 @@ spring:
         ephemeral: false
 feign:
   hystrix:
-    enabled: false
-
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000

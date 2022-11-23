@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.huahuo.model.common.dtos.ResponseResult;
 import com.huahuo.model.mail.dtos.*;
 import com.huahuo.model.mail.pojos.Mail;
+import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
@@ -23,6 +24,6 @@ public interface MailService extends IService<Mail> {
     ResponseResult senMailRandom(Mail mail) throws IOException;
     ResponseResult senMailById(Mail mail) throws IOException;
     ResponseResult search(EsSearchDto userSearchDto) throws IOException;
-    public void getStamp(Mail mail);
+    public void getStamp(Mail mail, Integer id);
     public ResponseResult listPublicMails(@RequestBody PbMail dto);
 }

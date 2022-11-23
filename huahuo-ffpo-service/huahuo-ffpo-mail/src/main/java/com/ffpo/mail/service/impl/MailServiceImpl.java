@@ -31,6 +31,7 @@ import com.huahuo.utils.common.GPSUtils;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.PropertiesUtil;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -40,6 +41,7 @@ import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -236,16 +238,15 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setUserId(mail.getSendUserId());
         mail.setSendAdd(userFeignService.getById(sendUserId).getAddress());
         mail.setGetAdd(userFeignService.getById(id).getAddress());
-        mail.setId((int)((Math.random()*9+1)*10000000));
-
         Map resultMap = new HashMap(3);
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
         resultMap.put("sendTime", formatDateTime);
-        getStamp(mail);
+
         User user = userFeignService.getById(sendUserId);
         mail.setSendUserName(user.getUsername());
         save(mail);
-        log.info("mail id==" + mail.getId());
+        getStamp(mail,mail.getId());
+        log.info("mail id==" + mail.getId()+"==========");
         log.info(mail.toString());
         //发邮件邮件 奖励100金币
         user.setCoinNum(user.getCoinNum() + 100);
@@ -332,14 +333,14 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
         mail.setSendAdd(user.getAddress());
         mail.setGetAdd(userFeignService.getById(id).getAddress());
         mail.setSendUserName(user.getUsername());
-        mail.setId((int)((Math.random()*9+1)*10000000));
         save(mail);
-        log.info("mail id==" + mail.getId());
+        Integer mailId = mail.getId();
+        log.info("mail id==" + mail.getId()+"============");
         log.info(mail.toString());
         Map resultMap = new HashMap(3);
         resultMap.put("code", AppHttpCodeEnum.SUCCESS.getCode());
         resultMap.put("sendTime", formatDateTime);
-        getStamp(mail);
+        getStamp(mail,mailId);
         user.setCoinNum(user.getCoinNum() + 100);
         userFeignService.save(user);
         FriendIDto friendIDto = new FriendIDto();
@@ -412,27 +413,29 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail>
     }
 
 
-    @Override
-    public void getStamp(Mail mail) {
-        Mail getMail;
 
-        int uuid=(int)((Math.random()*9+1)*10000000);
-        getMail = ObjectUtil.clone(mail);
-        getMail.setType(0);
-        getMail.setId(uuid);
-        getMail.setUserId(mail.getGetUserId());
-        getMail.setIsPublic(3);
+    @Override
+    public void getStamp(Mail mail,Integer mailId) {
+        Mail getMail = new Mail();
+
+        getMail.setStampId(1);
         save(getMail);
-        log.info("getmail==>id== ", getMail.getId());
-        log.info("getmail==>integer== ", uuid);
+        Integer getMailId  = getMail.getId();
+        BeanUtils.copyProperties(mail,getMail);
+        getMail.setId(getMailId);
+         log.info(">>>"+getMail.toString());
+         updateById(getMail);
+        log.info(mailId+"<<<<<<<<<getMailId1");
+        log.info(getMail.getId()+"<<<<<<<<<getMailId2");
+        log.info("sendmail==>id== ", mail.getId());
         ShippingMail shippingMail = new ShippingMail();
         shippingMail.setIsSend(0);
         //设置送达时间
         shippingMail.setSendTime(mail.getSendTime());
         //设置得到信件id
-        shippingMail.setGetId(uuid);
+        shippingMail.setGetId(getMailId);
         //设置送出信件id
-        shippingMail.setSendId(mail.getId());
+        shippingMail.setSendId(mailId);
 
         shippingMailService.save(shippingMail);
 
