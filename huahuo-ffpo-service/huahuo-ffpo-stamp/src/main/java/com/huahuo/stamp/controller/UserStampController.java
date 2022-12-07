@@ -64,6 +64,7 @@ public class UserStampController {
         StampDetail stamp = service.getById(id);
         if (stamp.getIsLike() == 0) {
             stamp.setIsLike(1);
+            service.updateById(stamp);
         }
         return ResponseResult.okResult("收藏成功！");
     }
@@ -80,6 +81,7 @@ public class UserStampController {
         StampDetail stamp = service.getById(id);
         if (stamp.getIsLike() == 1) {
             stamp.setIsLike(0);
+            service.updateById(stamp);
         }
         return ResponseResult.okResult("取消成功！");
     }
